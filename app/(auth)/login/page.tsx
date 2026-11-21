@@ -46,6 +46,7 @@ async function LoginFormSection({
   searchParams,
 }: Pick<PageProps<"/login">, "searchParams">) {
   const params = await searchParams;
+
   const next = typeof params.next === "string" ? params.next : undefined;
 
   return <LoginForm next={next} />;

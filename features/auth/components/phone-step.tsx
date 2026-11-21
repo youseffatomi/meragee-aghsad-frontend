@@ -40,6 +40,8 @@ export function PhoneStep({ defaultPhoneNumber = "", onSent }: PhoneStepProps) {
   const phoneNumber = useWatch({ control: form.control, name: "phoneNumber" });
 
   const submit = form.handleSubmit(async (values) => {
+    console.log("submit");
+
     setFormError(null);
 
     const result = await authApi.sendOtp(values);

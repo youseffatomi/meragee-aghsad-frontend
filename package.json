@@ -2,8 +2,14 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    "iOS >= 12",
+    "Chrome >= 64",
+    "Android >= 7",
+    "Safari >= 12"
+  ],
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
