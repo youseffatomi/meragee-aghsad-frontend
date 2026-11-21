@@ -1,0 +1,200 @@
+@import "tailwindcss";
+
+/* =============================================================================
+   Design tokens
+   -----------------------------------------------------------------------------
+   Two layers, and components may only touch the second one.
+
+   1. Primitives — the raw palette. `--brand-*` is a ramp derived from the
+      design's #FF6B1A: the OKLCH hue is preserved, each step's lightness is
+      set explicitly, and chroma is clamped back into sRGB. The contrast note
+      next to each step is measured, not guessed.
+   2. Semantic — role names (`--canvas`, `--ink`, `--brand-text`, ...). They are
+      mapped into Tailwind in `@theme inline` below, so re-theming the product
+      never requires opening a component.
+
+   Light only, deliberately: the brand logo and the default avatar are opaque
+   artwork on white and read badly against dark surfaces.
+   ============================================================================ */
+
+:root {
+  /* --- brand ramp ------------------------------------------------------
+     500 is the design fill. Above it each step is darkened along the same
+     hue; the 3:1 and 4.5:1 marks are where text may start using that step. */
+  --brand-50: #fff3ee;
+  --brand-100: #ffe5da;
+  --brand-200: #ffccb7;
+  --brand-300: #ffa884;
+  --brand-400: #ff8046;
+  --brand-500: #ff6b1a; /* fill, decoration      — 2.4:1 on canvas        */
+  --brand-600: #d25200; /* icons, large text     — 3.6:1 on canvas        */
+  --brand-700: #b24400; /* text at any size      — 4.8:1 on canvas        */
+  --brand-800: #903600;
+  --brand-900: #702800;
+
+  /* --- sampled from the panel design, not ramp steps -------------------
+     Four values the design uses verbatim: the strip the header card floats
+     in, the menu icon tile, the icon drawn on that tile (4.7:1 against it)
+     and the light end of the active menu item's gradient. */
+  --brand-band: #ffd9c4;
+  --brand-tile: #fff0e6;
+  --brand-icon: #c2410c;
+  --brand-sheen: #ffa45c;
+
+  /* --- warm neutrals, sampled from the design -------------------------- */
+  --neutral-0: #ffffff;
+  --neutral-50: #fffaf6;
+  --neutral-100: #fff4ec;
+  --neutral-200: #f1e8e0;
+  --neutral-300: #efece8;
+  --neutral-400: #d8d3cc;
+  --neutral-500: #5f5b55; /* 5.7:1 on canvas */
+  --neutral-700: #2b2724;
+  --neutral-900: #111111; /* 16.0:1 on canvas */
+
+  /* --- feedback -------------------------------------------------------- */
+  --red-50: #fdecea;
+  --red-500: #d93a26; /* 4.6:1 against white */
+  --red-600: #b32d1c;
+  --green-50: #e8f5ee;
+  --green-600: #1f7a4d;
+
+  /* --- surfaces -------------------------------------------------------- */
+  --canvas: var(--neutral-300);
+  --surface: var(--neutral-0);
+  --surface-muted: var(--neutral-100);
+  --surface-sunken: var(--neutral-50);
+  --line: var(--neutral-200);
+
+  /* --- text ------------------------------------------------------------ */
+  --ink: var(--neutral-900);
+  --ink-muted: var(--neutral-500);
+  --ink-inverse: var(--neutral-0);
+
+  /* --- brand roles -----------------------------------------------------
+     Three roles with three different contrast duties. `--brand` is a fill
+     only: at 2.4:1 on the canvas it must never carry text or a meaningful
+     icon. Reach for `--brand-strong` (>= 3:1) or `--brand-text` (>= 4.5:1). */
+  --brand: var(--brand-500);
+  --brand-strong: var(--brand-600);
+  --brand-text: var(--brand-700);
+  --brand-soft: var(--brand-100);
+  --brand-tint: var(--brand-50);
+
+  /* --- panel chrome -----------------------------------------------------
+     `--chrome-band` is the decorative strip the header card sits in;
+     `--nav-tile`/`--nav-icon` dress a menu row. */
+  --chrome-band: var(--brand-band);
+  --nav-tile: var(--brand-tile);
+  --nav-icon: var(--brand-icon);
+
+  --danger: var(--red-500);
+  --danger-text: var(--red-600);
+  --danger-soft: var(--red-50);
+  --success: var(--green-600);
+  --success-soft: var(--green-50);
+}
+
+@theme inline {
+  --font-sans: var(--font-iran-sans);
+
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-inverse: var(--ink-inverse);
+
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-text: var(--brand-text);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-tint: var(--brand-tint);
+
+  --color-chrome-band: var(--chrome-band);
+  --color-nav-tile: var(--nav-tile);
+  --color-nav-icon: var(--nav-icon);
+
+  --color-danger: var(--danger);
+  --color-danger-text: var(--danger-text);
+  --color-danger-soft: var(--danger-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+}
+
+@theme {
+  /* --- corner radii ----------------------------------------------------
+     `--radius-header` is a step below `--radius-card`: the header is a short
+     bar rather than a tall card, and the card's 28px reads as an egg on it. */
+  --radius-tile: 0.75rem;
+  --radius-field: 0.875rem;
+  --radius-header: 1.25rem;
+  --radius-card: 1.75rem;
+
+  /* --- elevation ------------------------------------------------------- */
+  --shadow-card: 0 18px 45px -30px rgb(43 39 36 / 0.35);
+  --shadow-float: 0 12px 15px -14px rgb(17 17 17 / 0.18);
+  --shadow-panel: 0 30px 80px -45px rgb(43 39 36 / 0.45);
+
+  /* --- the selected menu item ------------------------------------------ */
+  --background-image-nav-active: linear-gradient(
+    to right,
+    var(--brand-sheen),
+    var(--brand)
+  );
+  --shadow-nav-active: 0 6px 8px color-mix(in srgb, var(--brand-500) 40%, transparent);
+}
+
+/* --- geometry, every value measured off the panel design -----------------
+   The shell's fixed dimensions, so no component carries a magic pixel value.
+   `static` keeps every one of them in the stylesheet: components read them
+   back inside `calc()` as well as through the width and height utilities.
+
+   The band and the header were drawn generously — a 130px strip with the card
+   starting 75px down it. Both are trimmed here so the first row of content
+   arrives sooner; the card still breaks below the band's edge the way the
+   design has it. `--container-panel` is the width the product asked for; the
+   design was drawn 96px wider. */
+@theme static {
+  --container-panel: 81.25rem; /* 1300 */
+  --spacing-band: 5rem; /* 80 */
+  --spacing-header-card: 4.75rem; /* 76 */
+  --spacing-sidebar: 15rem; /* 240 */
+  --spacing-topbar: 1.25rem; /* 20 */
+  --spacing-stack: 1.5rem; /* 24 */
+  --spacing-gutter: 1.25rem; /* 20 */
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+  }
+
+  /* Form controls do not inherit typography from their ancestors. */
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+}
