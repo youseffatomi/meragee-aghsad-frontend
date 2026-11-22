@@ -99,8 +99,8 @@ export function AdminFrame({ sidebar, account, children }: AdminFrameProps) {
         onClick={() => setMenuOpen(false)}
         aria-hidden="true"
         className={cn(
-          "fixed inset-0 z-40 bg-ink/40 transition-opacity duration-200 motion-reduce:transition-none lg:hidden",
-          menuOpen ? "opacity-100" : "pointer-events-none opacity-0",
+          "fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 motion-reduce:transition-none lg:hidden",
+          menuOpen ? "backdrop-blur-xs" : "pointer-events-none opacity-0",
         )}
       />
 

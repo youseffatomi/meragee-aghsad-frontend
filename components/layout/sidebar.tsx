@@ -26,7 +26,7 @@ export function Sidebar({ items }: SidebarProps) {
     <div className="flex h-full flex-col gap-stack px-3 pt-4 pb-4">
       <Link
         href={homeRoute}
-        className="w-fit rounded-field focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:outline-none"
+        className="grid w-full place-items-center rounded-field focus-visible:ring-2 focus-visible:ring-brand-100 focus-visible:outline-none"
       >
         <Image
           src={site.logo.src}
@@ -34,7 +34,7 @@ export function Sidebar({ items }: SidebarProps) {
           width={site.logo.width}
           height={site.logo.height}
           priority
-          className="h-9 w-auto lg:h-11"
+          className="h-15 w-auto lg:h-15"
         />
       </Link>
 

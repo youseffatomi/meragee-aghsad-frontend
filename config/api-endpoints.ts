@@ -36,6 +36,8 @@ export const apiEndpoints = {
     pay: "/installments/paid",
   },
 
+  dashboard: "/dashboard",
+
   files: {
     send: "/file/send",
     remove: "/file/delete",

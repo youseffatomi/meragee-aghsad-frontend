@@ -157,6 +157,26 @@
     var(--brand)
   );
   --shadow-nav-active: 0 6px 8px color-mix(in srgb, var(--brand-500) 40%, transparent);
+
+  /* --- dashboard summary cards -----------------------------------------
+     Three windows, three temperatures: this month is plain brand orange,
+     this week tilts toward red, and overdue is the darkest — the most
+     urgent card should read as the heaviest, not just the reddest. */
+  --background-image-summary-month: linear-gradient(
+    135deg,
+    var(--brand-400),
+    var(--brand-600)
+  );
+  --background-image-summary-week: linear-gradient(
+    135deg,
+    var(--brand-500),
+    var(--red-500)
+  );
+  --background-image-summary-overdue: linear-gradient(
+    135deg,
+    var(--red-500),
+    var(--brand-900)
+  );
 }
 
 /* --- geometry, every value measured off the panel design -----------------
