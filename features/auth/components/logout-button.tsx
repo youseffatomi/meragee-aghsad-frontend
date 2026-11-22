@@ -62,8 +62,8 @@ export function LogoutButton({ variant = "header", className }: LogoutButtonProp
       onClick={logout}
       disabled={isPending}
       className={cn(
-        "flex h-9 shrink-0 items-center gap-2 rounded-field px-2.5 text-sm font-bold text-ink transition-colors",
-        "hover:bg-brand-tint hover:text-brand-text",
+        "flex h-9 shrink-0 items-center gap-2 rounded-field border border-brand-200 bg-brand-tint px-3 text-sm font-bold text-brand-text transition-colors",
+        "hover:bg-brand-soft",
         "disabled:pointer-events-none disabled:opacity-50",
         "focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:outline-none",
         className,

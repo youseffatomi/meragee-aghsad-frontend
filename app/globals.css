@@ -156,7 +156,7 @@
     var(--brand-sheen),
     var(--brand)
   );
-  --shadow-nav-active: 0 6px 8px color-mix(in srgb, var(--brand-500) 40%, transparent);
+  --shadow-nav-active: 0 6px 8px color-mix(in srgb, var(--brand-200) 10%, transparent);
 
   /* --- dashboard summary cards -----------------------------------------
      Three windows, three temperatures: this month is plain brand orange,

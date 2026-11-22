@@ -21,6 +21,14 @@ export const messages = {
     USER: "کاربر",
   } satisfies Record<Role, string>,
 
+  /** Copy that belongs to the panel's header chrome. */
+  header: {
+    greeting: "سلام، خوش آمدید",
+    addInvoiceCta: "افزودن کردن فاکتور جدید",
+    /** The compact label the floating button wears on narrow screens. */
+    addInvoiceShort: "فاکتور",
+  },
+
   actions: {
     logout: "خروج",
     retry: "تلاش دوباره",

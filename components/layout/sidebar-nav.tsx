@@ -45,7 +45,7 @@ function rowClasses(current: boolean): string {
 function tileClasses(current: boolean, section: boolean): string {
   return cn(
     "grid size-9 shrink-0 place-items-center rounded-tile",
-    current ? "bg-ink/12 text-white" : "text-nav-icon",
+    current ? "text-white" : "text-nav-icon",
     !current && (section ? "bg-brand-soft" : "bg-nav-tile"),
   );
 }
@@ -75,42 +75,44 @@ export function SidebarNav({ items }: SidebarNavProps) {
         const isOpen = expanded.includes(item.href) || section;
 
         return (
-          <li key={item.href} className="relative">
-            <Link
-              href={item.href}
-              aria-current={current ? "page" : undefined}
-              className={cn(
-                rowClasses(current),
-                hasChildren && "pe-11",
-                !current && (section ? "font-bold text-brand-text" : "text-ink"),
-              )}
-            >
-              <span className={tileClasses(current, section)}>
-                <NavIcon name={item.icon} className="size-4" />
-              </span>
-              <span>{item.label}</span>
-            </Link>
-
-            {hasChildren ? (
-              <button
-                type="button"
-                onClick={() => toggle(item.href)}
-                aria-expanded={isOpen}
-                aria-label={`زیرمنوی ${item.label}`}
+          <li key={item.href}>
+            <div className="relative">
+              <Link
+                href={item.href}
+                aria-current={current ? "page" : undefined}
                 className={cn(
-                  "absolute end-1 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-tile transition-colors",
-                  "focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:outline-none",
-                  current
-                    ? "text-white/90 hover:text-white"
-                    : "text-ink-muted hover:text-brand-text",
+                  rowClasses(current),
+                  hasChildren && "pe-11",
+                  !current && (section ? "font-bold text-brand-text" : "text-ink"),
                 )}
               >
-                <ChevronLeft
-                  className={cn("size-4 transition-transform", isOpen && "-rotate-90")}
-                  aria-hidden="true"
-                />
-              </button>
-            ) : null}
+                <span className={tileClasses(current, section)}>
+                  <NavIcon name={item.icon} className="size-4" />
+                </span>
+                <span>{item.label}</span>
+              </Link>
+
+              {hasChildren ? (
+                <button
+                  type="button"
+                  onClick={() => toggle(item.href)}
+                  aria-expanded={isOpen}
+                  aria-label={`زیرمنوی ${item.label}`}
+                  className={cn(
+                    "absolute top-1/2 left-1 grid size-8 -translate-y-1/2 cursor-pointer place-items-center rounded-tile bg-[rgba(255,229,218,.3)] transition-colors",
+                    "-rotate-90 focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:outline-none",
+                    current
+                      ? "text-white/90 hover:text-white"
+                      : "text-ink-muted hover:text-brand-text",
+                  )}
+                >
+                  <ChevronLeft
+                    className={cn("size-4 transition-transform", isOpen && "rotate-180")}
+                    aria-hidden="true"
+                  />
+                </button>
+              ) : null}
+            </div>
 
             {hasChildren && isOpen ? (
               <ul className="mt-1 flex flex-col gap-1 border-s border-line ps-2.5">

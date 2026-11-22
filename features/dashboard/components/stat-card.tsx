@@ -27,7 +27,7 @@ export function StatCard({ label, value, icon, accent = false }: StatCardProps) 
         <span className="text-xs text-ink-muted">{label}</span>
       </div>
 
-      <p className={cn("text-2xl font-black", accent ? "text-brand-text" : "text-ink")}>
+      <p className={cn("text-3xl font-bold", accent ? "text-brand-text" : "text-ink")}>
         {value}
       </p>
     </article>

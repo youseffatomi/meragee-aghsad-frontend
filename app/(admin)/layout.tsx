@@ -2,8 +2,13 @@ import { Suspense } from "react";
 
 import { AccountSection } from "@/components/layout/account-section";
 import { AdminFrame } from "@/components/layout/admin-frame";
+import { HeaderActions } from "@/components/layout/header-actions";
 import { SidebarSection } from "@/components/layout/sidebar-section";
-import { AccountSkeleton, SidebarSkeleton } from "@/components/layout/shell-skeletons";
+import {
+  AccountSkeleton,
+  ActionsSkeleton,
+  SidebarSkeleton,
+} from "@/components/layout/shell-skeletons";
 
 /**
  * Each part of the chrome that needs the session gets its own boundary, and
@@ -24,6 +29,11 @@ export default function AdminLayout({ children }: LayoutProps<"/">) {
       account={
         <Suspense fallback={<AccountSkeleton />}>
           <AccountSection />
+        </Suspense>
+      }
+      actions={
+        <Suspense fallback={<ActionsSkeleton />}>
+          <HeaderActions />
         </Suspense>
       }
     >

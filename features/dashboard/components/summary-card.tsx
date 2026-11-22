@@ -69,9 +69,9 @@ export function SummaryCard({ title, summary, href, tone }: SummaryCardProps) {
         </span>
       </div>
 
-      <p className="relative mt-2 text-3xl font-black md:text-xl">
-        <span className="ms-1 mr-auto block text-[10px] font-bold">تومان</span>
-        {formatNumber(summary.totalAmount)}
+      <p className="relative mt-2 text-5xl font-bold md:text-3xl">
+        <span className="ms-1 block text-left text-[10px] font-bold">تومان</span>
+        <span className="block text-left">{formatNumber(summary.totalAmount)}</span>
       </p>
 
       <div className="relative mt-5 border-t border-dashed border-white/40" />

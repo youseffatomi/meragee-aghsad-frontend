@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { Menu, X } from "lucide-react";
 
-import { LogoutButton } from "@/features/auth/components/logout-button";
 import { cn } from "@/lib/utils/cn";
 
 /**
@@ -31,10 +30,11 @@ const DESKTOP_QUERY = "(min-width: 64rem)";
 type AdminFrameProps = {
   sidebar: ReactNode;
   account: ReactNode;
+  actions: ReactNode;
   children: ReactNode;
 };
 
-export function AdminFrame({ sidebar, account, children }: AdminFrameProps) {
+export function AdminFrame({ sidebar, account, actions, children }: AdminFrameProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -122,7 +122,7 @@ export function AdminFrame({ sidebar, account, children }: AdminFrameProps) {
               {account}
             </div>
 
-            <LogoutButton />
+            {actions}
           </header>
 
           <div className="mt-stack flex items-start gap-gutter pb-10">
