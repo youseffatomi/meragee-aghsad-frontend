@@ -164,6 +164,71 @@ Validation example (400):
 - **Field-name gotchas** (do not "fix" these — they match the backend): the check-unique responses are `exitingPhone` / `exitingNationalId`, and product images use `pictures`.
 - **Upload flow:** `POST /file/send` → `data.filePath` (filename) → later pass that filename as `Installment.paymentReceipt` via `POST /installments/paid`; delete abandoned temp files with `POST /file/delete`.
 
+## Components
+
+Every reusable component lives in one of two places: `components/ui/` for
+primitives with no domain knowledge, and `features/<feature>/components/` for
+feature-specific pieces. Add a new entry to this list in the same commit that
+adds the component, so the inventory never drifts from the tree.
+
+### `components/ui/`
+
+| Component       | Path                               | Purpose                                           |
+| --------------- | ---------------------------------- | ------------------------------------------------- |
+| `Alert`         | `components/ui/alert.tsx`          | Inline form/page message (error, info, success).  |
+| `Badge`         | `components/ui/badge.tsx`          | Semantic pill for a role or status.               |
+| `Button`        | `components/ui/button.tsx`         | The single button primitive, with loading state.  |
+| `ConfirmDialog` | `components/ui/confirm-dialog.tsx` | Native `<dialog>` yes/no confirmation.            |
+| `EmptyState`    | `components/ui/empty-state.tsx`    | Shared "nothing here yet" block.                  |
+| `Field`         | `components/ui/field.tsx`          | Label, control wiring and error/hint as one unit. |
+| `Input`         | `components/ui/input.tsx`          | Single-line text input.                           |
+| `Lightbox`      | `components/ui/lightbox.tsx`       | Full-size image viewer on a native dialog.        |
+| `OtpInput`      | `components/ui/otp-input.tsx`      | Segmented one-time-code input.                    |
+| `Pagination`    | `components/ui/pagination.tsx`     | Page navigation shared by paginated tables.       |
+| `Select`        | `components/ui/select.tsx`         | Native `<select>` styled like `Input`.            |
+| `Spinner`       | `components/ui/spinner.tsx`        | Animated arc used by buttons and uploaders.       |
+| `Textarea`      | `components/ui/textarea.tsx`       | Multi-line sibling of `Input`.                    |
+
+### `features/users/components/`
+
+| Component           | Path                                                | Purpose                                                            |
+| ------------------- | --------------------------------------------------- | ------------------------------------------------------------------ |
+| `CreateUserWizard`  | `features/users/components/create-user-wizard.tsx`  | Four-step create flow with role, details, documents and review.    |
+| `DeleteUserButton`  | `features/users/components/delete-user-button.tsx`  | Delete action with a yes/no dialog.                                |
+| `DocumentThumbnail` | `features/users/components/document-thumbnail.tsx`  | Clickable preview with an optional remove corner button.           |
+| `DocumentUploader`  | `features/users/components/document-uploader.tsx`   | Drag-and-drop upload that deletes abandoned temp files.            |
+| `EditableField`     | `features/users/components/editable-field.tsx`      | One profile row with a pencil that swaps the value for a control.  |
+| `RoleBadge`         | `features/users/components/role-badge.tsx`          | Role enum rendered as a readable badge.                            |
+| `UserDocuments`     | `features/users/components/user-documents.tsx`      | Document gallery with the national card first and a lightbox.      |
+| `UserInvoicesTable` | `features/users/components/user-invoices-table.tsx` | Paginated invoices belonging to one user.                          |
+| `UserProfile`       | `features/users/components/user-profile.tsx`        | Profile card with field-level editing and a save bar.              |
+| `UsersSearchForm`   | `features/users/components/users-search-form.tsx`   | Search form that updates the URL via client navigation, no reload. |
+| `UsersTable`        | `features/users/components/users-table.tsx`         | Users list rows with view/edit/delete actions.                     |
+| `UniqueStatus`      | `features/users/components/unique-status.tsx`       | Checking/available/taken line under a uniqueness-checked field.    |
+| `WizardStepper`     | `features/users/components/wizard-stepper.tsx`      | Progress rail for the create-user wizard.                          |
+
+### `features/users/` hooks
+
+| Hook             | Path                                 | Purpose                                                                    |
+| ---------------- | ------------------------------------ | -------------------------------------------------------------------------- |
+| `useUniqueCheck` | `features/users/use-unique-check.ts` | On-blur national-ID/phone uniqueness check with stale-response protection. |
+
+### `features/dashboard/components/`
+
+| Component                | Path                                                         | Purpose                                           |
+| ------------------------ | ------------------------------------------------------------ | ------------------------------------------------- |
+| `InstallmentStatusBadge` | `features/dashboard/components/installment-status-badge.tsx` | Paid/pending/overdue pill.                        |
+| `InstallmentsTable`      | `features/dashboard/components/installments-table.tsx`       | Configurable installment table for the dashboard. |
+| `StatCard`               | `features/dashboard/components/stat-card.tsx`                | Single dashboard statistic.                       |
+| `SummaryCard`            | `features/dashboard/components/summary-card.tsx`             | Period summary card (month/week/overdue).         |
+
+### `features/auth/components/`
+
+| Component           | Path                                               | Purpose                     |
+| ------------------- | -------------------------------------------------- | --------------------------- |
+| `LoginForm`         | `features/auth/components/login-form.tsx`          | Phone → OTP two-step login. |
+| `LoginFormSkeleton` | `features/auth/components/login-form-skeleton.tsx` | Login form placeholder.     |
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

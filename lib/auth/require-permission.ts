@@ -3,8 +3,10 @@ import "server-only";
 import { redirect } from "next/navigation";
 
 import { landingPathFor } from "@/config/navigation";
+import { messages } from "@/config/messages";
 import { can, type Permission } from "@/config/permissions";
 import { routes } from "@/config/routes";
+import { ApiError } from "@/lib/api/errors";
 import { getSession, type Session } from "./session";
 
 /**
@@ -24,6 +26,64 @@ export async function requirePermission(permission: Permission): Promise<Session
 
   if (!can(session.permissions, permission)) {
     redirect(landingPathFor(session.permissions));
+  }
+
+  return session;
+}
+
+/**
+ * The Route Handler counterpart of `requirePermission`.
+ *
+ * A redirect is meaningless to a `fetch` from the browser, so a missing
+ * session becomes a `401` and a missing permission a `403` — both in the same
+ * `ActionResult` envelope every handler already returns.
+ */
+export async function requireApiPermission(permission: Permission): Promise<Session> {
+  const session = await getSession();
+
+  if (!session) {
+    throw new ApiError({
+      message: messages.errors.unauthorized,
+      statusCode: 401,
+      errorCode: "UNAUTHORIZED",
+    });
+  }
+
+  if (!can(session.permissions, permission)) {
+    throw new ApiError({
+      message: messages.errors.forbidden,
+      statusCode: 403,
+      errorCode: "FORBIDDEN",
+    });
+  }
+
+  return session;
+}
+
+/**
+ * Like `requireApiPermission`, but the session only needs one of the listed
+ * permissions. Used by shared endpoints — the uniqueness check is reachable
+ * from both the create and the edit form.
+ */
+export async function requireAnyApiPermission(
+  permissions: readonly Permission[],
+): Promise<Session> {
+  const session = await getSession();
+
+  if (!session) {
+    throw new ApiError({
+      message: messages.errors.unauthorized,
+      statusCode: 401,
+      errorCode: "UNAUTHORIZED",
+    });
+  }
+
+  if (!permissions.some((permission) => can(session.permissions, permission))) {
+    throw new ApiError({
+      message: messages.errors.forbidden,
+      statusCode: 403,
+      errorCode: "FORBIDDEN",
+    });
   }
 
   return session;

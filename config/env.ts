@@ -11,10 +11,12 @@ import { z } from "zod";
  */
 const envSchema = z.object({
   API_BASE_URL: z.url({ error: "API_BASE_URL must be an absolute URL" }),
+  BASE_URL: z.url({ error: "BASE_URL must be an absolute URL" }),
 });
 
 const parsed = envSchema.safeParse({
   API_BASE_URL: process.env.API_BASE_URL,
+  BASE_URL: process.env.BASE_URL,
 });
 
 if (!parsed.success) {

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { Toaster } from "sonner";
 
 import { AccountSection } from "@/components/layout/account-section";
 import { AdminFrame } from "@/components/layout/admin-frame";
@@ -38,6 +39,7 @@ export default function AdminLayout({ children }: LayoutProps<"/">) {
       }
     >
       {children}
+      <Toaster dir="rtl" position="top-center" richColors closeButton />
     </AdminFrame>
   );
 }

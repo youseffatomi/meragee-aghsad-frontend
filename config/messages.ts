@@ -44,5 +44,6 @@ export const messages = {
     forbidden: "شما به این بخش دسترسی ندارید.",
     notFound: "موردی یافت نشد.",
     validation: "اطلاعات واردشده معتبر نیست.",
+    userHasInvoices: "این کاربر دارای فاکتور است و امکان حذف آن وجود ندارد.",
   },
 } as const;

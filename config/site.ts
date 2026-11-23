@@ -7,7 +7,7 @@
  */
 export const site = {
   name: "سامانه مدیریت اقساط معراجی",
-  shortName: "معراجی",
+  shortName: "موبایل معراجی",
   currency: "تومان",
 
   logo: {

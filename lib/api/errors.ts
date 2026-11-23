@@ -19,6 +19,7 @@ const ERROR_CODE_MESSAGES: Record<string, string> = {
   FORBIDDEN: messages.errors.forbidden,
   NOT_FOUND: messages.errors.notFound,
   USER_NOT_FOUND: messages.errors.notFound,
+  USER_HAS_INVOICES: messages.errors.userHasInvoices,
   TOO_MANY_REQUESTS: "تعداد درخواست‌ها بیش از حد مجاز است. کمی بعد دوباره تلاش کنید.",
   INTERNAL_SERVER_ERROR: "خطای داخلی سرور رخ داد. کمی بعد دوباره تلاش کنید.",
 };

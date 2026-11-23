@@ -54,8 +54,9 @@ async function request<T>(
   options: RequestOptions,
 ): Promise<T> {
   const headers: Record<string, string> = { Accept: "application/json" };
+  const isFormData = body instanceof FormData;
 
-  if (body !== undefined) {
+  if (body !== undefined && !isFormData) {
     headers["Content-Type"] = "application/json";
   }
 
@@ -69,7 +70,12 @@ async function request<T>(
     response = await fetch(buildUrl(path, options.query), {
       method,
       headers,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+            ? (body as FormData)
+            : JSON.stringify(body),
       // Authenticated data is per-user; caching it would be a correctness bug.
       cache: "no-store",
       signal: options.signal,
@@ -96,6 +102,10 @@ export const apiClient = {
 
   post: <T>(path: string, body?: unknown, options: RequestOptions = {}) =>
     request<T>("POST", path, body, options),
+
+  /** Multipart upload: the browser's `FormData` is forwarded untouched. */
+  postForm: <T>(path: string, form: FormData, options: RequestOptions = {}) =>
+    request<T>("POST", path, form, options),
 
   put: <T>(path: string, body?: unknown, options: RequestOptions = {}) =>
     request<T>("PUT", path, body, options),

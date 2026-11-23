@@ -16,6 +16,7 @@ export const apiEndpoints = {
     all: "/users/find/all",
     me: "/users/find/me",
     one: (id: string) => `/users/find/one/${encodeURIComponent(id)}`,
+    list: "/users/search",
     create: "/users/create",
     update: (id: string) => `/users/update/${encodeURIComponent(id)}`,
     remove: (id: string) => `/users/remove/${encodeURIComponent(id)}`,
@@ -54,5 +55,16 @@ export const bffEndpoints = {
     verifyOtp: "/api/auth/verify-otp",
     refresh: "/api/auth/refresh",
     logout: "/api/auth/logout",
+  },
+
+  users: {
+    create: "/api/users",
+    one: (id: string) => `/api/users/${encodeURIComponent(id)}`,
+    checkUnique: "/api/users/check-unique",
+  },
+
+  files: {
+    upload: "/api/files/upload",
+    remove: "/api/files/delete",
   },
 } as const;

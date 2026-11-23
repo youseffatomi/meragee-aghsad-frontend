@@ -21,7 +21,7 @@ export function Input({ invalid = false, className, ...props }: InputProps) {
   return (
     <input
       className={cn(
-        "h-12 w-full rounded-field border bg-surface px-4 text-sm text-ink",
+        "h-12 w-full rounded-field border bg-surface px-4 text-base text-ink sm:text-sm",
         "placeholder:text-ink-muted/70",
         "transition-[border-color,box-shadow] duration-150 outline-none",
         "border-line focus:border-brand-600 focus:ring-4 focus:ring-brand-500/15",
@@ -29,8 +29,8 @@ export function Input({ invalid = false, className, ...props }: InputProps) {
         invalid && "border-danger focus:border-danger focus:ring-danger/15",
         className,
       )}
-      aria-invalid={invalid || undefined}
       {...props}
+      aria-invalid={invalid || undefined}
     />
   );
 }

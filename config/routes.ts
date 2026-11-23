@@ -14,11 +14,13 @@ export const routes = {
   users: {
     list: "/users",
     create: "/users/create",
+    one: (id: string) => `/users/${encodeURIComponent(id)}`,
   },
 
   invoices: {
     list: "/invoices",
     create: "/invoices/create",
+    one: (id: string) => `/invoices/${encodeURIComponent(id)}`,
   },
 
   installments: {

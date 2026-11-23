@@ -16,7 +16,7 @@ import { ApiError, toActionFailure } from "./errors";
  * component render an error without knowing where it came from.
  */
 
-type Handler<T> = (request: Request) => Promise<T>;
+type Handler<T, C> = (request: Request, context: C) => Promise<T>;
 
 /** A backend status is meaningful to the browser; an internal one is not. */
 function statusFor(error: unknown): number {
@@ -24,10 +24,13 @@ function statusFor(error: unknown): number {
   return 500;
 }
 
-export function routeHandler<T>(handler: Handler<T>) {
-  return async (request: Request): Promise<NextResponse<ActionResult<T>>> => {
+export function routeHandler<T, C = undefined>(handler: Handler<T, C>) {
+  return async (
+    request: Request,
+    context?: unknown,
+  ): Promise<NextResponse<ActionResult<T>>> => {
     try {
-      const data = await handler(request);
+      const data = await handler(request, context as C);
       return NextResponse.json<ActionResult<T>>({ ok: true, data }, { status: 200 });
     } catch (error) {
       return NextResponse.json<ActionResult<never>>(toActionFailure(error), {
@@ -61,7 +64,7 @@ export async function readJson<T>(request: Request, schema: ZodType<T>): Promise
       message: messages.errors.validation,
       statusCode: 400,
       fieldErrors: parsed.error.issues.map((issue) => ({
-        field: String(issue.path[0] ?? ""),
+        field: issue.path.join("."),
         message: issue.message,
       })),
     });

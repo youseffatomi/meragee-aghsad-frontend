@@ -6,7 +6,7 @@
 export const validation = {
   phoneNumber: {
     /** The backend rejects anything shorter; it does not require the `09` prefix. */
-    minLength: 10,
+    minLength: 11,
     maxLength: 15,
     example: "09123456789",
   },

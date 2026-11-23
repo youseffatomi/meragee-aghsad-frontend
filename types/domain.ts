@@ -1,4 +1,5 @@
 import type { Role } from "@/config/permissions";
+import type { Paginated } from "@/types/api";
 
 /**
  * Backend domain models, mirroring the schemas in the OpenAPI spec.
@@ -29,6 +30,51 @@ export type User = {
   } | null;
   createdAt?: string;
   updatedAt?: string;
+};
+
+/** A product reference inside the invoices embedded in `GET /users/find/one`. */
+export type UserInvoiceProduct = {
+  _id: string;
+  price?: number;
+};
+
+/** An installment reference inside the invoices embedded in `GET /users/find/one`. */
+export type UserInvoiceInstallment = {
+  _id: string;
+  status: InstallmentStatus;
+  dueDate: string;
+};
+
+/**
+ * One invoice row as returned inside `GET /users/find/one/{id}`.
+ *
+ * That endpoint selects a narrower projection than `/invoice/search`: products
+ * carry only `price` (no name) and installments only `status`/`dueDate`. The
+ * `totalAmount` and `installmentsStatus` fields are Mongoose virtuals, so they
+ * are computed server-side and may be absent if the projection changes.
+ */
+export type UserInvoice = {
+  _id: string;
+  name: string;
+  downPayment: number;
+  installmentCount: number;
+  start_date: string;
+  start_date_jalaly: string;
+  products?: UserInvoiceProduct[] | null;
+  installments?: UserInvoiceInstallment[] | null;
+  totalAmount?: number;
+  installmentsStatus?: {
+    pending: number;
+    paid: number;
+    overdue: number;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+/** The `data` of `GET /users/find/one/{id}` — the user plus a page of invoices. */
+export type UserWithInvoices = User & {
+  invoices: Paginated<UserInvoice>;
 };
 
 /** Whether an installment is still owed, settled, or past its due date. */
