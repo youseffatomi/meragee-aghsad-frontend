@@ -22,10 +22,7 @@ export default async function CreateUserPage() {
           بازگشت به کاربران
         </Link>
 
-        <PageTitle
-          title="افزودن کاربر"
-          description="در چهار مرحله کاربر جدید را با نقش و مدارک اختیاری ثبت کنید."
-        />
+        <PageTitle title="افزودن کاربر" />
       </div>
 
       <CreateUserWizard />

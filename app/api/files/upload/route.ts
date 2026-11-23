@@ -3,7 +3,7 @@ import { apiClient } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import { routeHandler } from "@/lib/api/route-handler";
 import { readSessionCookies } from "@/lib/auth/cookies";
-import { requireApiPermission } from "@/lib/auth/require-permission";
+import { requireAnyApiPermission } from "@/lib/auth/require-permission";
 import { validation } from "@/config/validation";
 
 /**
@@ -13,7 +13,7 @@ import { validation } from "@/config/validation";
  * type and size again; checking here as well keeps the error immediate.
  */
 export const POST = routeHandler(async (request) => {
-  await requireApiPermission("users:create");
+  await requireAnyApiPermission(["users:create", "invoice:create", "installment:pay"]);
 
   const form = await request.formData();
   const file = form.get("file");

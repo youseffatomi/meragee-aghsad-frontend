@@ -2,6 +2,7 @@ import {
   CalendarDays,
   FilePlus2,
   Home,
+  Package,
   ReceiptText,
   UserPlus,
   Users,
@@ -24,6 +25,7 @@ const ICONS: Record<NavIconName, LucideIcon> = {
   receipt: ReceiptText,
   "file-plus": FilePlus2,
   calendar: CalendarDays,
+  package: Package,
 };
 
 export function NavIcon({ name, className }: { name: NavIconName; className?: string }) {

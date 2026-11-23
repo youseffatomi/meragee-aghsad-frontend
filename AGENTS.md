@@ -109,28 +109,29 @@ Validation example (400):
 
 `Access` lists the roles allowed; `any` = any authenticated user. Everything except the three `Auth` routes needs `Authorization: Bearer <token>`. A `200` always uses the success envelope; the payload under `data` is noted in parentheses.
 
-| Method | Path                             | Access              | Request                                                             | Responses                                                       |
-| ------ | -------------------------------- | ------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
-| POST   | `/auth/login/send-otp`           | public              | `{ phoneNumber }` (≥10)                                             | 200 (`null`); 400; 401 `INVALID_CREDENTIALS`; 429; 500          |
-| POST   | `/auth/login/verify-otp`         | public              | `{ phoneNumber (≥10), otp (4) }`                                    | 200 (`AuthTokens`); 400 `ERROR_OTP_INVALID`; 500                |
-| POST   | `/auth/refresh`                  | public              | `{ refreshToken }`                                                  | 200 (`AuthTokens`); 400 `ERROR_TOKEN_REQUIRED`; 404; 500        |
-| GET    | `/users/find/all`                | SUPER_ADMIN, SELLER | —                                                                   | 200 (`User[]`); 401; 403; 500                                   |
-| GET    | `/users/find/me`                 | any                 | —                                                                   | 200 (`User`); 401; 404 `USER_NOT_FOUND`; 500                    |
-| GET    | `/users/find/one/{id}`           | SUPER_ADMIN, SELLER | path `id`                                                           | 200 (`User`); 401; 403; 404 `USER_NOT_FOUND`; 500               |
-| POST   | `/users/create`                  | SUPER_ADMIN         | `UserInput`                                                         | 200 (`User`); 400; 401; 403; 500                                |
-| PUT    | `/users/update/{id}`             | SUPER_ADMIN         | path `id`; `UserInput`                                              | 200 (`User`); 400; 401; 403; 500                                |
-| DELETE | `/users/remove/{id}`             | SUPER_ADMIN         | path `id`                                                           | 200 (`null`); 401; 403; 404 `USER_NOT_FOUND`; 500               |
-| GET    | `/users/roles`                   | any                 | —                                                                   | 200 (`Roles`); 401; 500                                         |
-| POST   | `/users/check-phone-unique`      | SUPER_ADMIN         | `{ phoneNumber, excludeUserId? }`                                   | 200 (`{ exitingPhone }`); 400; 401; 403; 500                    |
-| POST   | `/users/check-nationalid-unique` | SUPER_ADMIN         | `{ nationalId (10), excludeUserId? }`                               | 200 (`{ exitingNationalId }`); 400; 401; 403; 500               |
-| POST   | `/users/search/{nationalId}`     | SUPER_ADMIN, SELLER | path `nationalId` (prefix match)                                    | 200 (`{_id,name,lastName,nationalId}[]`); 400; 401; 403; 500    |
-| POST   | `/invoice`                       | SUPER_ADMIN         | `InvoiceInput`                                                      | 200 (`Invoice`); 400; 401; 403; 500                             |
-| GET    | `/invoice/find/one/{invoiceId}`  | SUPER_ADMIN         | path `invoiceId`                                                    | 200 (`Invoice`, populated); 400; 401; 403; 404 `NOT_FOUND`; 500 |
-| GET    | `/invoice/search`                | SUPER_ADMIN         | query `search*`, `limit*`, `page*`, `fromDate?`, `toDate?`          | 200 (`{ result: Invoice[], meta }`); 400; 401; 403; 500         |
-| GET    | `/installments/search`           | SUPER_ADMIN         | query `limit*`, `page*`, `fromDate?`, `toDate?`, `status?`, `user?` | 200 (`{ result: Installment[], meta }`); 400; 401; 403; 500     |
-| POST   | `/installments/paid`             | SUPER_ADMIN         | `{ installmentId, paymentReceipt }`                                 | 200 (`InstallmentPaymentResult`); 400; 401; 403; 500            |
-| POST   | `/file/send`                     | SUPER_ADMIN         | multipart `file`                                                    | 200 (`{ filePath }`); 400; 401; 403                             |
-| POST   | `/file/delete`                   | SUPER_ADMIN         | `{ filename }`                                                      | 200 (`null`); 400; 401; 403                                     |
+| Method | Path                             | Access                          | Request                                                             | Responses                                                       |
+| ------ | -------------------------------- | ------------------------------- | ------------------------------------------------------------------- | --------------------------------------------------------------- |
+| POST   | `/auth/login/send-otp`           | public                          | `{ phoneNumber }` (≥10)                                             | 200 (`null`); 400; 401 `INVALID_CREDENTIALS`; 429; 500          |
+| POST   | `/auth/login/verify-otp`         | public                          | `{ phoneNumber (≥10), otp (4) }`                                    | 200 (`AuthTokens`); 400 `ERROR_OTP_INVALID`; 500                |
+| POST   | `/auth/refresh`                  | public                          | `{ refreshToken }`                                                  | 200 (`AuthTokens`); 400 `ERROR_TOKEN_REQUIRED`; 404; 500        |
+| GET    | `/users/find/all`                | SUPER_ADMIN, SELLER             | —                                                                   | 200 (`User[]`); 401; 403; 500                                   |
+| GET    | `/users/find/me`                 | any                             | —                                                                   | 200 (`User`); 401; 404 `USER_NOT_FOUND`; 500                    |
+| GET    | `/users/find/one/{id}`           | SUPER_ADMIN, SELLER             | path `id`                                                           | 200 (`User`); 401; 403; 404 `USER_NOT_FOUND`; 500               |
+| POST   | `/users/create`                  | SUPER_ADMIN                     | `UserInput`                                                         | 200 (`User`); 400; 401; 403; 500                                |
+| PUT    | `/users/update/{id}`             | SUPER_ADMIN                     | path `id`; `UserInput`                                              | 200 (`User`); 400; 401; 403; 500                                |
+| DELETE | `/users/remove/{id}`             | SUPER_ADMIN                     | path `id`                                                           | 200 (`null`); 401; 403; 404 `USER_NOT_FOUND`; 500               |
+| GET    | `/users/roles`                   | any                             | —                                                                   | 200 (`Roles`); 401; 500                                         |
+| POST   | `/users/check-phone-unique`      | SUPER_ADMIN                     | `{ phoneNumber, excludeUserId? }`                                   | 200 (`{ exitingPhone }`); 400; 401; 403; 500                    |
+| POST   | `/users/check-nationalid-unique` | SUPER_ADMIN                     | `{ nationalId (10), excludeUserId? }`                               | 200 (`{ exitingNationalId }`); 400; 401; 403; 500               |
+| GET    | `/users/search`                  | SUPER_ADMIN, SELLER             | query `search?`, `page?`, `limit?` (name/lastName/nationalId/phone) | 200 (`{ result: User[], meta }`); 400; 401; 403; 500            |
+| POST   | `/invoice`                       | SUPER_ADMIN                     | `InvoiceInput`                                                      | 200 (`Invoice`); 400; 401; 403; 500                             |
+| GET    | `/invoice/find/one/{invoiceId}`  | SUPER_ADMIN                     | path `invoiceId`                                                    | 200 (`Invoice`, populated); 400; 401; 403; 404 `NOT_FOUND`; 500 |
+| GET    | `/invoice/search`                | SUPER_ADMIN                     | query `search*`, `limit*`, `page*`, `fromDate?`, `toDate?`          | 200 (`{ result: Invoice[], meta }`); 400; 401; 403; 500         |
+| GET    | `/installments/search`           | SUPER_ADMIN                     | query `limit*`, `page*`, `fromDate?`, `toDate?`, `status?`, `user?` | 200 (`{ result: Installment[], meta }`); 400; 401; 403; 500     |
+| POST   | `/installments/paid`             | SUPER_ADMIN                     | `{ installmentId, paymentReceipt }`                                 | 200 (`InstallmentPaymentResult`); 400; 401; 403; 500            |
+| GET    | `/products/search`               | SUPER_ADMIN, SELLER, ACCOUNTANT | query `search?`, `page?`, `limit?` (name prefix / partial IMEI)     | 200 (`{ result: Product[], meta }`); 400; 401; 403; 500         |
+| POST   | `/file/send`                     | SUPER_ADMIN                     | multipart `file`                                                    | 200 (`{ filePath }`); 400; 401; 403                             |
+| POST   | `/file/delete`                   | SUPER_ADMIN                     | `{ filename }`                                                      | 200 (`null`); 400; 401; 403                                     |
 
 `*` = required.
 
@@ -142,7 +143,7 @@ Validation example (400):
 
 ### Behaviors & gotchas
 
-- Only `SUPER_ADMIN` and `SELLER` actually reach any route; `ACCOUNTANT` and `USER` exist in the role enum but are granted access to no documented endpoint.
+- `SUPER_ADMIN` reaches every route and `SELLER` reaches users plus products; `ACCOUNTANT` can only read products; `USER` is granted no route.
 - `send-otp` only works for a phone number **already registered** (otherwise 401 `INVALID_CREDENTIALS`); OTP sending is rate limited (429).
 - `installments/paid` only succeeds when the installment is `status=pending` **and** `paymentReceipt=null`; it sets `paidAt` and moves the receipt file from `uploads/temp` to the main uploads folder.
 - `file/send`: the multipart field must be named exactly `file`; only `image/jpeg`, `image/png`, `image/webp`; max 5 MB. Validation failures carry a string `errorDetails` (no file / too large / invalid format).
@@ -173,39 +174,43 @@ adds the component, so the inventory never drifts from the tree.
 
 ### `components/ui/`
 
-| Component       | Path                               | Purpose                                           |
-| --------------- | ---------------------------------- | ------------------------------------------------- |
-| `Alert`         | `components/ui/alert.tsx`          | Inline form/page message (error, info, success).  |
-| `Badge`         | `components/ui/badge.tsx`          | Semantic pill for a role or status.               |
-| `Button`        | `components/ui/button.tsx`         | The single button primitive, with loading state.  |
-| `ConfirmDialog` | `components/ui/confirm-dialog.tsx` | Native `<dialog>` yes/no confirmation.            |
-| `EmptyState`    | `components/ui/empty-state.tsx`    | Shared "nothing here yet" block.                  |
-| `Field`         | `components/ui/field.tsx`          | Label, control wiring and error/hint as one unit. |
-| `Input`         | `components/ui/input.tsx`          | Single-line text input.                           |
-| `Lightbox`      | `components/ui/lightbox.tsx`       | Full-size image viewer on a native dialog.        |
-| `OtpInput`      | `components/ui/otp-input.tsx`      | Segmented one-time-code input.                    |
-| `Pagination`    | `components/ui/pagination.tsx`     | Page navigation shared by paginated tables.       |
-| `Select`        | `components/ui/select.tsx`         | Native `<select>` styled like `Input`.            |
-| `Spinner`       | `components/ui/spinner.tsx`        | Animated arc used by buttons and uploaders.       |
-| `Textarea`      | `components/ui/textarea.tsx`       | Multi-line sibling of `Input`.                    |
+| Component          | Path                               | Purpose                                                     |
+| ------------------ | ---------------------------------- | ----------------------------------------------------------- |
+| `Alert`            | `components/ui/alert.tsx`          | Inline form/page message (error, info, success).            |
+| `Badge`            | `components/ui/badge.tsx`          | Semantic pill for a role or status.                         |
+| `Button`           | `components/ui/button.tsx`         | The single button primitive, with loading state.            |
+| `ConfirmDialog`    | `components/ui/confirm-dialog.tsx` | Native `<dialog>` yes/no confirmation.                      |
+| `JalaliDatePicker` | `components/ui/date-picker.tsx`    | Persian calendar picker that stores Gregorian `YYYY-MM-DD`. |
+| `EmptyState`       | `components/ui/empty-state.tsx`    | Shared "nothing here yet" block.                            |
+| `Field`            | `components/ui/field.tsx`          | Label, control wiring and error/hint as one unit.           |
+| `ImageUploader`    | `components/ui/image-uploader.tsx` | Drag-and-drop image upload; deletes abandoned temp files.   |
+| `Input`            | `components/ui/input.tsx`          | Single-line text input.                                     |
+| `Lightbox`         | `components/ui/lightbox.tsx`       | Full-size image viewer on a native dialog.                  |
+| `OtpInput`         | `components/ui/otp-input.tsx`      | Segmented one-time-code input.                              |
+| `Pagination`       | `components/ui/pagination.tsx`     | Page navigation shared by paginated tables.                 |
+| `Select`           | `components/ui/select.tsx`         | Native `<select>` styled like `Input`.                      |
+| `Spinner`          | `components/ui/spinner.tsx`        | Animated arc used by buttons and uploaders.                 |
+| `Textarea`         | `components/ui/textarea.tsx`       | Multi-line sibling of `Input`.                              |
+| `WizardStepper`    | `components/ui/wizard-stepper.tsx` | Progress rail shared by the create wizards.                 |
 
 ### `features/users/components/`
 
-| Component           | Path                                                | Purpose                                                            |
-| ------------------- | --------------------------------------------------- | ------------------------------------------------------------------ |
-| `CreateUserWizard`  | `features/users/components/create-user-wizard.tsx`  | Four-step create flow with role, details, documents and review.    |
-| `DeleteUserButton`  | `features/users/components/delete-user-button.tsx`  | Delete action with a yes/no dialog.                                |
-| `DocumentThumbnail` | `features/users/components/document-thumbnail.tsx`  | Clickable preview with an optional remove corner button.           |
-| `DocumentUploader`  | `features/users/components/document-uploader.tsx`   | Drag-and-drop upload that deletes abandoned temp files.            |
-| `EditableField`     | `features/users/components/editable-field.tsx`      | One profile row with a pencil that swaps the value for a control.  |
-| `RoleBadge`         | `features/users/components/role-badge.tsx`          | Role enum rendered as a readable badge.                            |
-| `UserDocuments`     | `features/users/components/user-documents.tsx`      | Document gallery with the national card first and a lightbox.      |
-| `UserInvoicesTable` | `features/users/components/user-invoices-table.tsx` | Paginated invoices belonging to one user.                          |
-| `UserProfile`       | `features/users/components/user-profile.tsx`        | Profile card with field-level editing and a save bar.              |
-| `UsersSearchForm`   | `features/users/components/users-search-form.tsx`   | Search form that updates the URL via client navigation, no reload. |
-| `UsersTable`        | `features/users/components/users-table.tsx`         | Users list rows with view/edit/delete actions.                     |
-| `UniqueStatus`      | `features/users/components/unique-status.tsx`       | Checking/available/taken line under a uniqueness-checked field.    |
-| `WizardStepper`     | `features/users/components/wizard-stepper.tsx`      | Progress rail for the create-user wizard.                          |
+| Component           | Path                                                | Purpose                                                              |
+| ------------------- | --------------------------------------------------- | -------------------------------------------------------------------- |
+| `CreateUserWizard`  | `features/users/components/create-user-wizard.tsx`  | Four-step create flow with role, details, documents and review.      |
+| `DeleteUserButton`  | `features/users/components/delete-user-button.tsx`  | Delete action with a yes/no dialog.                                  |
+| `DocumentThumbnail` | `features/users/components/document-thumbnail.tsx`  | Clickable preview with an optional remove corner button.             |
+| `DocumentUploader`  | `features/users/components/document-uploader.tsx`   | Drag-and-drop upload that deletes abandoned temp files.              |
+| `EditableField`     | `features/users/components/editable-field.tsx`      | One profile row with a pencil that swaps the value for a control.    |
+| `RoleBadge`         | `features/users/components/role-badge.tsx`          | Role enum rendered as a readable badge.                              |
+| `UserDocuments`     | `features/users/components/user-documents.tsx`      | Document gallery with the national card first and a lightbox.        |
+| `UserInvoicesTable` | `features/users/components/user-invoices-table.tsx` | Paginated invoices belonging to one user.                            |
+| `UserProfile`       | `features/users/components/user-profile.tsx`        | Profile card with field-level editing and a save bar.                |
+| `UsersSearchForm`   | `features/users/components/users-search-form.tsx`   | Search form that updates the URL via client navigation, no reload.   |
+| `UsersTable`        | `features/users/components/users-table.tsx`         | Users list rows with view/edit/delete actions.                       |
+| `UniqueStatus`      | `features/users/components/unique-status.tsx`       | Checking/available/taken line under a uniqueness-checked field.      |
+| `UserSearchPicker`  | `features/users/components/user-search-picker.tsx`  | Debounced customer lookup shared by invoice and installment filters. |
+| `WizardStepper`     | `features/users/components/wizard-stepper.tsx`      | Re-export of the shared `components/ui/wizard-stepper`.              |
 
 ### `features/users/` hooks
 
@@ -217,7 +222,7 @@ adds the component, so the inventory never drifts from the tree.
 
 | Component                | Path                                                         | Purpose                                           |
 | ------------------------ | ------------------------------------------------------------ | ------------------------------------------------- |
-| `InstallmentStatusBadge` | `features/dashboard/components/installment-status-badge.tsx` | Paid/pending/overdue pill.                        |
+| `InstallmentStatusBadge` | `features/dashboard/components/installment-status-badge.tsx` | Re-export of the installments feature's pill.     |
 | `InstallmentsTable`      | `features/dashboard/components/installments-table.tsx`       | Configurable installment table for the dashboard. |
 | `StatCard`               | `features/dashboard/components/stat-card.tsx`                | Single dashboard statistic.                       |
 | `SummaryCard`            | `features/dashboard/components/summary-card.tsx`             | Period summary card (month/week/overdue).         |
@@ -228,6 +233,34 @@ adds the component, so the inventory never drifts from the tree.
 | ------------------- | -------------------------------------------------- | --------------------------- |
 | `LoginForm`         | `features/auth/components/login-form.tsx`          | Phone → OTP two-step login. |
 | `LoginFormSkeleton` | `features/auth/components/login-form-skeleton.tsx` | Login form placeholder.     |
+
+### `features/invoices/components/`
+
+| Component             | Path                                                     | Purpose                                                             |
+| --------------------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
+| `CreateInvoiceWizard` | `features/invoices/components/create-invoice-wizard.tsx` | Five-step invoice flow: customer, terms, products, pledges, review. |
+| `CustomerPicker`      | `features/invoices/components/customer-picker.tsx`       | Debounced customer lookup by name, national ID or phone.            |
+| `InvoiceDetail`       | `features/invoices/components/invoice-detail.tsx`        | Invoice summary, products, pledges and its installments.            |
+| `InvoiceFilters`      | `features/invoices/components/invoice-filters.tsx`       | Search, Jalali date range and preset filters for the invoice list.  |
+| `InvoicesTable`       | `features/invoices/components/invoices-table.tsx`        | Invoice rows with customer, totals and installment status.          |
+
+### `features/installments/components/`
+
+| Component                | Path                                                            | Purpose                                                    |
+| ------------------------ | --------------------------------------------------------------- | ---------------------------------------------------------- |
+| `InstallmentFilters`     | `features/installments/components/installment-filters.tsx`      | Status and due-date filters; `overdue` disables dates.     |
+| `InstallmentStatusBadge` | `features/installments/components/installment-status-badge.tsx` | Paid/pending/overdue pill.                                 |
+| `InstallmentsTable`      | `features/installments/components/installments-table.tsx`       | Full installment feed with totals, penalty and pay action. |
+| `PayInstallmentButton`   | `features/installments/components/pay-installment-button.tsx`   | Opens the pay dialog for one installment.                  |
+| `PayInstallmentDialog`   | `features/installments/components/pay-installment-dialog.tsx`   | Receipt upload and `installments/paid` submission.         |
+
+### `features/products/components/`
+
+| Component            | Path                                                    | Purpose                                                           |
+| -------------------- | ------------------------------------------------------- | ----------------------------------------------------------------- |
+| `ProductCard`        | `features/products/components/product-card.tsx`         | One product tile with picture, price, owner and invoice shortcut. |
+| `ProductsGrid`       | `features/products/components/products-grid.tsx`        | Responsive product card grid with an empty state.                 |
+| `ProductsSearchForm` | `features/products/components/products-search-form.tsx` | URL-driven search bar for the product list.                       |
 
 <!-- BEGIN:nextjs-agent-rules -->
 

@@ -12,7 +12,7 @@ import { routes } from "./routes";
  */
 
 export type NavIconName =
-  "home" | "users" | "user-plus" | "receipt" | "file-plus" | "calendar";
+  "home" | "users" | "user-plus" | "receipt" | "file-plus" | "calendar" | "package";
 
 export type NavigationItem = {
   label: string;
@@ -62,6 +62,12 @@ export const navigation: readonly NavigationItem[] = [
     href: routes.installments.list,
     icon: "calendar",
     permission: "installment:read",
+  },
+  {
+    label: "محصولات",
+    href: routes.products.list,
+    icon: "package",
+    permission: "product:read",
   },
 ];
 

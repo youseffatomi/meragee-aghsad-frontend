@@ -6,8 +6,7 @@
  * change here and never a hunt through components.
  *
  * The grants mirror the `x-allowed-roles` values in the backend OpenAPI spec.
- * Note that `ACCOUNTANT` and `USER` exist in the role enum but are granted no
- * route by the backend today.
+ * `ACCOUNTANT` can only read products; `USER` is granted no route today.
  */
 
 export const ROLES = ["SUPER_ADMIN", "SELLER", "ACCOUNTANT", "USER"] as const;
@@ -24,14 +23,15 @@ export const PERMISSIONS = [
   "invoice:create",
   "installment:read",
   "installment:pay",
+  "product:read",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
 
 const GRANTS: Record<Role, readonly Permission[]> = {
   SUPER_ADMIN: PERMISSIONS,
-  SELLER: ["users:read"],
-  ACCOUNTANT: [],
+  SELLER: ["users:read", "product:read"],
+  ACCOUNTANT: ["product:read"],
   USER: [],
 };
 

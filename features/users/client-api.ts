@@ -1,5 +1,7 @@
 import { bffEndpoints } from "@/config/api-endpoints";
 import { messages } from "@/config/messages";
+import { filesApi } from "@/features/files/client-api";
+import type { Paginated } from "@/types/api";
 import type { ActionResult } from "@/types/result";
 import type { User } from "@/types/domain";
 import type { CheckUniqueInput, CreateUserInput, UpdateUserInput } from "./schemas";
@@ -50,25 +52,25 @@ export const usersApi = {
 
   remove: (id: string) => request<null>(bffEndpoints.users.one(id), { method: "DELETE" }),
 
-  upload: (file: File) => {
-    const form = new FormData();
-    form.append("file", file);
+  upload: (file: File) => filesApi.upload(file),
 
-    return request<{ filePath: string }>(bffEndpoints.files.upload, {
-      method: "POST",
-      body: form,
-    });
-  },
-
-  removeFile: (filename: string) =>
-    request<null>(bffEndpoints.files.remove, {
-      method: "POST",
-      body: JSON.stringify({ filename }),
-    }),
+  removeFile: (filename: string) => filesApi.remove(filename),
 
   checkUnique: (input: CheckUniqueInput) =>
     request<{ taken: boolean }>(bffEndpoints.users.checkUnique, {
       method: "POST",
       body: JSON.stringify(input),
     }),
+
+  /** Debounced customer lookup used by the invoice and installment filters. */
+  search: (search: string, signal?: AbortSignal) => {
+    const params = new URLSearchParams();
+    if (search.trim()) params.set("search", search.trim());
+    params.set("limit", "8");
+
+    return request<Paginated<User>>(`${bffEndpoints.users.search}?${params.toString()}`, {
+      method: "GET",
+      signal,
+    });
+  },
 };

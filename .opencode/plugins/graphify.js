@@ -26,7 +26,10 @@ const hasGraph = (directory) => existsSync(join(directory, "graphify-out", "grap
 // file, and OpenCode loads both. OpenCode 2 fails the second plugin with the
 // same id ("Duplicate plugin ID"), so the id carries this file's location. The
 // copies share one record of who was reminded, so a command gets one reminder.
-const location = [...import.meta.url].reduce((hash, ch) => (Math.imul(hash, 31) + ch.charCodeAt(0)) >>> 0, 7);
+const location = [...import.meta.url].reduce(
+  (hash, ch) => (Math.imul(hash, 31) + ch.charCodeAt(0)) >>> 0,
+  7,
+);
 const reminded = (globalThis.__graphifyReminded ??= new Set());
 
 export default {

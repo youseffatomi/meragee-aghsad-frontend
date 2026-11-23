@@ -26,6 +26,10 @@ export const routes = {
   installments: {
     list: "/installments",
   },
+
+  products: {
+    list: "/products",
+  },
 } as const;
 
 /** The landing page after a successful login, and the fallback for unknown paths. */

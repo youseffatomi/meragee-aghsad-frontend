@@ -44,3 +44,21 @@ export async function getUserWithInvoices(
     query: { page, limit },
   });
 }
+
+/**
+ * A single customer, used to label a filter that arrived through the URL.
+ * Returns `null` instead of throwing: a missing label must never block the
+ * installments page.
+ */
+export async function getUserById(id: string): Promise<User | null> {
+  try {
+    const { access } = await readSessionCookies();
+
+    return await apiClient.get<UserWithInvoices>(apiEndpoints.users.one(id), {
+      token: access,
+      query: { page: 1, limit: 1 },
+    });
+  } catch {
+    return null;
+  }
+}

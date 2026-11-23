@@ -16,23 +16,33 @@ import { toAuthorizationHeader } from "@/lib/auth/token";
  * turn a failure into a thrown `ApiError`.
  */
 
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 type QueryValue = string | number | boolean | null | undefined;
 
 export type RequestOptions = {
   /** `undefined`, `null` and `""` values are dropped instead of sent empty. */
   query?: Record<string, QueryValue>;
+  /**
+   * Query keys whose empty value must still be sent. `/invoice/search` requires
+   * `search` to be present, but an empty search is how it lists everything.
+   */
+  keepEmpty?: readonly string[];
   /** The raw token. It already carries a `Bearer ` prefix; we never add a second. */
   token?: string | null;
   signal?: AbortSignal;
 };
 
-function buildUrl(path: string, query?: Record<string, QueryValue>): string {
+function buildUrl(
+  path: string,
+  query?: Record<string, QueryValue>,
+  keepEmpty?: readonly string[],
+): string {
   const url = new URL(`${env.API_BASE_URL}${path}`);
 
   for (const [key, value] of Object.entries(query ?? {})) {
-    if (value === undefined || value === null || value === "") continue;
+    if (value === undefined || value === null) continue;
+    if (value === "" && !keepEmpty?.includes(key)) continue;
     url.searchParams.set(key, String(value));
   }
 
@@ -67,7 +77,7 @@ async function request<T>(
   let response: Response;
 
   try {
-    response = await fetch(buildUrl(path, options.query), {
+    response = await fetch(buildUrl(path, options.query, options.keepEmpty), {
       method,
       headers,
       body:
@@ -109,6 +119,9 @@ export const apiClient = {
 
   put: <T>(path: string, body?: unknown, options: RequestOptions = {}) =>
     request<T>("PUT", path, body, options),
+
+  patch: <T>(path: string, body?: unknown, options: RequestOptions = {}) =>
+    request<T>("PATCH", path, body, options),
 
   delete: <T>(path: string, options: RequestOptions = {}) =>
     request<T>("DELETE", path, undefined, options),

@@ -35,6 +35,12 @@ export const apiEndpoints = {
   installments: {
     search: "/installments/search",
     pay: "/installments/paid",
+    update: (installmentId: string) =>
+      `/installments/${encodeURIComponent(installmentId)}`,
+  },
+
+  products: {
+    search: "/products/search",
   },
 
   dashboard: "/dashboard",
@@ -60,7 +66,17 @@ export const bffEndpoints = {
   users: {
     create: "/api/users",
     one: (id: string) => `/api/users/${encodeURIComponent(id)}`,
+    search: "/api/users/search",
     checkUnique: "/api/users/check-unique",
+  },
+
+  invoices: {
+    create: "/api/invoices",
+  },
+
+  installments: {
+    pay: "/api/installments/pay",
+    update: (id: string) => `/api/installments/${encodeURIComponent(id)}`,
   },
 
   files: {

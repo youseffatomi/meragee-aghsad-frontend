@@ -43,7 +43,7 @@ export default async function UsersPage({ searchParams }: PageProps<"/users">) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <PageTitle title="کاربران" description="جستجو، مشاهده و مدیریت کاربران سامانه." />
+        <PageTitle title="کاربران" />
 
         {can(session.permissions, "users:create") ? (
           <Link
