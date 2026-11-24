@@ -1,3 +1,4 @@
+import { io } from "next/cache";
 import { Package, Users, Wallet } from "lucide-react";
 
 import { PageTitle } from "@/components/layout/page-title";
@@ -10,13 +11,17 @@ import { StatCard } from "@/features/dashboard/components/stat-card";
 import { SummaryCard } from "@/features/dashboard/components/summary-card";
 import { getDashboardData, getOverdueInstallments } from "@/features/dashboard/api";
 import { fromDashboardRow, fromInstallment } from "@/features/dashboard/rows";
+import {
+  endOfJalaliMonth,
+  endOfWeek,
+  startOfJalaliMonth,
+  startOfWeek,
+  toIsoDate,
+} from "@/lib/date/range";
 import { formatNumber } from "@/lib/format/number";
 import { requirePermission } from "@/lib/auth/require-permission";
 
 export const metadata = { title: "داشبورد" };
-
-/** The one place a status filter belongs; the installments page owns the rest. */
-const overdueHref = `${routes.installments.list}?status=overdue`;
 
 const TODAY_COLUMNS: readonly TableColumn[] = [
   "customer",
@@ -24,7 +29,6 @@ const TODAY_COLUMNS: readonly TableColumn[] = [
   "product",
   "amount",
   "status",
-  "action",
 ];
 
 const OVERDUE_COLUMNS: readonly TableColumn[] = [
@@ -36,11 +40,33 @@ const OVERDUE_COLUMNS: readonly TableColumn[] = [
   "penalty",
   "payable",
   "status",
-  "action",
 ];
 
 export default async function DashboardPage() {
   await requirePermission("dashboard:view");
+
+  // `new Date()` is synchronous IO: Cache Components rejects it during
+  // prerendering. Awaiting `io()` moves this read to request time, so the
+  // "today"/"this week"/"this month" links are always current.
+  await io();
+  const today = new Date();
+
+  const installmentsHref = (params: Record<string, string>) => {
+    const query = new URLSearchParams(params).toString();
+    return `${routes.installments.list}?${query}`;
+  };
+
+  const todayIso = toIsoDate(today);
+  const todayHref = installmentsHref({ fromDate: todayIso, toDate: todayIso });
+  const monthHref = installmentsHref({
+    fromDate: toIsoDate(startOfJalaliMonth(today)),
+    toDate: toIsoDate(endOfJalaliMonth(today)),
+  });
+  const weekHref = installmentsHref({
+    fromDate: toIsoDate(startOfWeek(today)),
+    toDate: toIsoDate(endOfWeek(today)),
+  });
+  const overdueHref = installmentsHref({ status: "overdue" });
 
   // Two independent backend calls, so they go out together rather than in turn.
   const [data, overdue] = await Promise.all([
@@ -57,13 +83,13 @@ export default async function DashboardPage() {
           title="اقساط این ماه"
           tone="month"
           summary={data.summary.thisMonth}
-          href={routes.installments.list}
+          href={monthHref}
         />
         <SummaryCard
           title="اقساط این هفته"
           tone="week"
           summary={data.summary.thisWeek}
-          href={routes.installments.list}
+          href={weekHref}
         />
         <SummaryCard
           title="کل اقساط عقب افتاده"
@@ -97,7 +123,7 @@ export default async function DashboardPage() {
 
       <InstallmentsTable
         title="اقساط امروز"
-        href={routes.installments.list}
+        href={todayHref}
         rows={data.todayInstallments.map(fromDashboardRow)}
         emptyMessage="امروز قسطی سررسید نشده است."
         columns={TODAY_COLUMNS}

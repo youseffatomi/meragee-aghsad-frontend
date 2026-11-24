@@ -26,8 +26,7 @@ export type TableColumn =
   | "daysOverdue"
   | "penalty"
   | "payable"
-  | "status"
-  | "action";
+  | "status";
 
 type ColumnDef = {
   header: string;
@@ -76,19 +75,6 @@ const COLUMNS: Record<TableColumn, ColumnDef> = {
   status: {
     header: "وضعیت",
     cell: (row) => <InstallmentStatusBadge status={row.status} />,
-  },
-  action: {
-    header: "",
-    // A neutral link for now; the target is wired once the installment page exists.
-    cell: (row) => (
-      <Link
-        href="#"
-        aria-label={`مشاهده قسط ${row.customerName}`}
-        className="inline-flex h-7 items-center rounded-full border border-line px-3 text-[11px] font-bold text-ink-muted transition-colors hover:bg-surface-sunken focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:outline-none"
-      >
-        مشاهده
-      </Link>
-    ),
   },
 };
 
