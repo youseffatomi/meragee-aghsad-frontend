@@ -19,15 +19,11 @@ import {
   getFinancialSummary,
   getFinancialTrend,
   getReportCustomers,
-  getReportInvoices,
-  getReportProducts,
 } from "@/features/reports/api";
-import { AgingTable } from "@/features/reports/components/aging-table";
 import { ExportButton } from "@/features/reports/components/export-button";
 import { ForecastCard } from "@/features/reports/components/forecast-card";
-import { InvoiceFinancialTable } from "@/features/reports/components/invoice-financial-table";
 import { KpiCard } from "@/features/reports/components/kpi-card";
-import { ProductRevenueTable } from "@/features/reports/components/product-revenue-table";
+import { ReportExportFilters } from "@/features/reports/components/report-export-filters";
 import { ReportFilters } from "@/features/reports/components/report-filters";
 import { StatusBreakdown } from "@/features/reports/components/status-breakdown";
 import { TopCustomersTable } from "@/features/reports/components/top-customers-table";
@@ -64,11 +60,6 @@ function single(value: string | string[] | undefined): string {
 
 function isoDate(value: string): string {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
-}
-
-function positivePage(value: string): number {
-  const page = Number.parseInt(value, 10);
-  return Number.isFinite(page) && page > 0 ? page : 1;
 }
 
 function readGranularity(value: string): TrendGranularity {
@@ -119,14 +110,11 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
   const search = single(params.invSearch);
   const status = readInvoiceStatus(single(params.invStatus));
   const sort = readInvoiceSort(single(params.invSort));
-  const page = positivePage(single(params.invPage));
 
-  const [summary, trend, invoices, customers, products] = await Promise.all([
+  const [summary, trend, customers] = await Promise.all([
     getFinancialSummary({ fromDate, toDate }),
     getFinancialTrend({ fromDate, toDate, granularity }),
-    getReportInvoices({ fromDate, toDate, search, status, sort, page }),
     getReportCustomers({ fromDate, toDate, sort: "outstanding" }),
-    getReportProducts({ fromDate, toDate, sort: "revenue" }),
   ]);
 
   const { sales, collections, receivables, penalties, previous } = summary;
@@ -147,7 +135,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
       <div className="flex flex-wrap items-start justify-between gap-3">
         <PageTitle
           title="گزارش مالی"
-          description="فروش، وصول و مطالبات در بازهٔ انتخابی — همراه با خروجی CSV"
+          description="فاکتورها، پرداخت اقساط و مانده بدهی در بازهٔ انتخابی — همراه با خروجی CSV"
         />
         <ExportButton
           fromDate={fromDate}
@@ -171,10 +159,13 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
       </section>
 
       <section aria-label="شاخص‌های فروش" className="flex flex-col gap-3">
-        <h2 className="text-sm font-bold text-ink">فروش دوره</h2>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-sm font-bold text-ink">فاکتورهای صادرشده در این بازه</h2>
+          <p className="text-[11px] text-ink-muted">بر اساس تاریخ صدور فاکتور</p>
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
-            label="فروش ناخالص"
+            label="مبلغ کل فروش"
             value={formatNumber(sales.grossSales)}
             unit="تومان"
             hint={`${toPersianDigits(sales.invoiceCount)} فاکتور`}
@@ -183,16 +174,16 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
             tone="brand"
           />
           <KpiCard
-            label="سود (بهره)"
+            label="بهرهٔ اقساط"
             value={formatNumber(sales.interest)}
             unit="تومان"
-            hint="بهرهٔ کل قراردادها"
+            hint="جمع بهرهٔ اقساط این فاکتورها"
             icon={<Percent className="size-4" aria-hidden="true" />}
             delta={change(sales.interest, previous.interest)}
             tone="info"
           />
           <KpiCard
-            label="میانگین فاکتور"
+            label="میانگین مبلغ فاکتور"
             value={formatNumber(Math.round(sales.averageInvoice))}
             unit="تومان"
             hint={`${toPersianDigits(sales.customerCount)} مشتری`}
@@ -200,7 +191,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
             tone="neutral"
           />
           <KpiCard
-            label="اقلام فروخته‌شده"
+            label="تعداد محصولات فروخته‌شده"
             value={toPersianDigits(sales.productCount)}
             unit="قلم"
             hint={`پیش‌پرداخت: ${formatNumber(sales.downPayments)}`}
@@ -211,10 +202,13 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
       </section>
 
       <section aria-label="شاخص‌های وصول" className="flex flex-col gap-3">
-        <h2 className="text-sm font-bold text-ink">وصول دوره</h2>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-sm font-bold text-ink">اقساط پرداخت‌شده در این بازه</h2>
+          <p className="text-[11px] text-ink-muted">بر اساس تاریخ پرداخت قسط</p>
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
-            label="کل وصول‌شده"
+            label="جمع اقساط پرداخت‌شده"
             value={formatNumber(collections.totalCollected)}
             unit="تومان"
             hint={`${toPersianDigits(collections.paidCount)} قسط`}
@@ -223,7 +217,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
             tone="success"
           />
           <KpiCard
-            label="نرخ وصول"
+            label="درصد پرداخت اقساط"
             value={formatPercent(collections.collectionRate)}
             hint="از اقساط فاکتورهای این بازه"
             icon={<LineChart className="size-4" aria-hidden="true" />}
@@ -235,7 +229,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
             tone="success"
           />
           <KpiCard
-            label="جریمهٔ وصول‌شده"
+            label="جریمهٔ دیرکرد دریافت‌شده"
             value={formatNumber(collections.penaltyCollected)}
             unit="تومان"
             hint={`${toPersianDigits(collections.waivedDays)} روز بخشیده‌شده`}
@@ -243,7 +237,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
             tone="brand"
           />
           <KpiCard
-            label="اصل وام وصول‌شده"
+            label="اصل اقساط پرداخت‌شده"
             value={formatNumber(collections.principalCollected)}
             unit="تومان"
             hint={`بهره: ${formatNumber(collections.interestCollected)}`}
@@ -254,15 +248,15 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
       </section>
 
       <section aria-label="شاخص‌های مطالبات" className="flex flex-col gap-3">
-        <h2 className="text-sm font-bold text-ink">
-          مطالبات
-          <span className="ms-2 text-[11px] font-normal text-ink-muted">
-            (وضعیت همین حالا، مستقل از بازه)
-          </span>
-        </h2>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-sm font-bold text-ink">
+            اقساط پرداخت‌نشده (بدهی باقی‌مانده)
+          </h2>
+          <p className="text-[11px] text-ink-muted">وضعیت همین حالا، مستقل از بازه</p>
+        </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <KpiCard
-            label="کل مطالبات"
+            label="جمع اقساط باقی‌مانده"
             value={formatNumber(receivables.totalOutstanding)}
             unit="تومان"
             hint={`${toPersianDigits(receivables.pendingCount)} قسط در انتظار`}
@@ -270,7 +264,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
             tone="neutral"
           />
           <KpiCard
-            label="مطالبات معوقه"
+            label="اقساط معوقه"
             value={formatNumber(receivables.overdueOutstanding)}
             unit="تومان"
             hint={`${toPersianDigits(receivables.overdueCount)} قسط`}
@@ -278,7 +272,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
             tone="danger"
           />
           <KpiCard
-            label="سررسید ۳۰ روز آینده"
+            label="اقساط سررسید ۳۰ روز آینده"
             value={formatNumber(receivables.upcoming30)}
             unit="تومان"
             hint={`۹۰ روز: ${formatNumber(receivables.upcoming90)}`}
@@ -286,7 +280,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
             tone="brand"
           />
           <KpiCard
-            label="جریمهٔ"
+            label="جریمهٔ دیرکرد انباشته"
             value={formatNumber(penalties.accrued)}
             unit="تومان"
             hint={`${toPersianDigits(penalties.overdueWithPenaltyCount)} قسط جریمه‌دار`}
@@ -298,7 +292,7 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
 
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <article className="rounded-card border border-line bg-surface p-4 shadow-card sm:p-5 xl:col-span-2">
-          <h2 className="mb-4 text-sm font-bold text-ink">جریان مالی در بازه</h2>
+          <h2 className="mb-4 text-sm font-bold text-ink">روند فروش و پرداخت اقساط</h2>
           <TrendChart points={trend.points} granularity={trend.granularity} />
         </article>
 
@@ -315,54 +309,22 @@ export default async function ReportsPage({ searchParams }: PageProps<"/reports"
 
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <article className="rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
-          <h2 className="mb-4 text-sm font-bold text-ink">سن مطالبات معوقه</h2>
-          <AgingTable buckets={summary.aging} />
+          <div className="mb-4 flex flex-col gap-1">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-sm font-bold text-ink">بیشترین مانده بدهی مشتریان</h2>
+              <span className="text-[11px] text-ink-muted">۵ مشتری اول</span>
+            </div>
+            <p className="text-[11px] text-ink-muted">
+              ماندهٔ اقساط پرداخت‌نشده در این بازه
+            </p>
+          </div>
+          <TopCustomersTable rows={customers.result} />
         </article>
 
         <article className="rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
           <h2 className="mb-4 text-sm font-bold text-ink">پیش‌بینی سررسید</h2>
           <ForecastCard receivables={receivables} />
         </article>
-      </section>
-
-      <section className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <article className="rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
-          <div className="mb-4 flex items-center justify-between gap-2">
-            <h2 className="text-sm font-bold text-ink">بیشترین مطالبات مشتریان</h2>
-            <span className="text-[11px] text-ink-muted">۵ مشتری اول</span>
-          </div>
-          <TopCustomersTable rows={customers.result} />
-        </article>
-
-        <article className="rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
-          <div className="mb-4 flex items-center justify-between gap-2">
-            <h2 className="text-sm font-bold text-ink">پرفروش‌ترین محصولات</h2>
-            <span className="text-[11px] text-ink-muted">۵ محصول اول</span>
-          </div>
-          <ProductRevenueTable rows={products.result} />
-        </article>
-      </section>
-
-      <section className="rounded-card border border-line bg-surface p-4 shadow-card sm:p-5">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-bold text-ink">ریز مالی فاکتورها</h2>
-          <Link
-            href={resetInvoiceHref}
-            className="text-[11px] font-bold text-brand-text hover:underline"
-          >
-            حذف فیلترها
-          </Link>
-        </div>
-        <InvoiceFinancialTable
-          rows={invoices.result}
-          meta={invoices.meta}
-          fromDate={fromDate}
-          toDate={toDate}
-          granularity={granularity}
-          search={search}
-          status={status}
-          sort={sort}
-        />
       </section>
     </div>
   );

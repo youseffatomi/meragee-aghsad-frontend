@@ -9,11 +9,6 @@ import type {
   FinancialTrend,
   ReportCustomerRow,
   ReportCustomerSort,
-  ReportInvoiceFilterStatus,
-  ReportInvoiceRow,
-  ReportInvoiceSort,
-  ReportProductRow,
-  ReportProductSort,
   TrendGranularity,
 } from "@/types/domain";
 
@@ -25,7 +20,6 @@ import type {
  * the backend envelope.
  */
 
-export const REPORT_PAGE_SIZE = 10;
 export const REPORT_OVERVIEW_LIMIT = 5;
 
 type RangeQuery = { fromDate: string; toDate: string };
@@ -55,29 +49,6 @@ export async function getFinancialTrend({
   });
 }
 
-export async function getReportInvoices({
-  fromDate,
-  toDate,
-  search,
-  status,
-  sort,
-  page,
-  limit = REPORT_PAGE_SIZE,
-}: RangeQuery & {
-  search?: string;
-  status: ReportInvoiceFilterStatus;
-  sort: ReportInvoiceSort;
-  page: number;
-  limit?: number;
-}): Promise<Paginated<ReportInvoiceRow>> {
-  const { access } = await readSessionCookies();
-
-  return apiClient.get<Paginated<ReportInvoiceRow>>(apiEndpoints.reports.invoices, {
-    token: access,
-    query: { fromDate, toDate, search, status, sort, page, limit },
-  });
-}
-
 export async function getReportCustomers({
   fromDate,
   toDate,
@@ -92,25 +63,6 @@ export async function getReportCustomers({
   const { access } = await readSessionCookies();
 
   return apiClient.get<Paginated<ReportCustomerRow>>(apiEndpoints.reports.customers, {
-    token: access,
-    query: { fromDate, toDate, sort, page, limit },
-  });
-}
-
-export async function getReportProducts({
-  fromDate,
-  toDate,
-  sort,
-  page = 1,
-  limit = REPORT_OVERVIEW_LIMIT,
-}: RangeQuery & {
-  sort: ReportProductSort;
-  page?: number;
-  limit?: number;
-}): Promise<Paginated<ReportProductRow>> {
-  const { access } = await readSessionCookies();
-
-  return apiClient.get<Paginated<ReportProductRow>>(apiEndpoints.reports.products, {
     token: access,
     query: { fromDate, toDate, sort, page, limit },
   });
