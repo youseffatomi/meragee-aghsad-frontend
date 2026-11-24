@@ -21,7 +21,7 @@ export function StatusBreakdown({ data }: { data: ReportStatusBreakdown }) {
   let offset = 0;
 
   return (
-    <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:justify-between xl:flex-col">
       <div className="relative shrink-0">
         <svg
           viewBox="0 0 140 140"
