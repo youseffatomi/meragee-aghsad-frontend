@@ -6,7 +6,7 @@
  * artwork lives in `front-assent-for-ai/`, which is never served.
  */
 export const site = {
-  name: "سامانه مدیریت اقساط معراجی",
+  name: "سامانه مدیریت اقساط موبایل معراجی",
   shortName: "موبایل معراجی",
   currency: "تومان",
 

@@ -127,6 +127,7 @@ Validation example (400):
 | POST   | `/invoice`                       | SUPER_ADMIN                     | `InvoiceInput`                                                      | 200 (`Invoice`); 400; 401; 403; 500                             |
 | GET    | `/invoice/find/one/{invoiceId}`  | SUPER_ADMIN                     | path `invoiceId`                                                    | 200 (`Invoice`, populated); 400; 401; 403; 404 `NOT_FOUND`; 500 |
 | GET    | `/invoice/search`                | SUPER_ADMIN                     | query `search*`, `limit*`, `page*`, `fromDate?`, `toDate?`          | 200 (`{ result: Invoice[], meta }`); 400; 401; 403; 500         |
+| GET    | `/public/invoice/{token}`        | public                          | path `token` (20–100 chars, `[A-Za-z0-9_-]`)                        | 200 (`PublicInvoice`, censored); 400; 404 `NOT_FOUND`; 500      |
 | GET    | `/installments/search`           | SUPER_ADMIN                     | query `limit*`, `page*`, `fromDate?`, `toDate?`, `status?`, `user?` | 200 (`{ result: Installment[], meta }`); 400; 401; 403; 500     |
 | POST   | `/installments/paid`             | SUPER_ADMIN                     | `{ installmentId, paymentReceipt }`                                 | 200 (`InstallmentPaymentResult`); 400; 401; 403; 500            |
 | GET    | `/products/search`               | SUPER_ADMIN, SELLER, ACCOUNTANT | query `search?`, `page?`, `limit?` (name prefix / partial IMEI)     | 200 (`{ result: Product[], meta }`); 400; 401; 403; 500         |
@@ -143,7 +144,7 @@ Validation example (400):
 
 ### Behaviors & gotchas
 
-- `SUPER_ADMIN` reaches every route and `SELLER` reaches users plus products; `ACCOUNTANT` can only read products; `USER` is granted no route.
+- `SUPER_ADMIN` reaches every route and `SELLER` reaches users plus products; `ACCOUNTANT` can only read products. `USER` is a customer account: it is rejected at login and only opens the public invoice link.
 - `send-otp` only works for a phone number **already registered** (otherwise 401 `INVALID_CREDENTIALS`); OTP sending is rate limited (429).
 - `installments/paid` only succeeds when the installment is `status=pending` **and** `paymentReceipt=null`; it sets `paidAt` and moves the receipt file from `uploads/temp` to the main uploads folder.
 - `file/send`: the multipart field must be named exactly `file`; only `image/jpeg`, `image/png`, `image/webp`; max 5 MB. Validation failures carry a string `errorDetails` (no file / too large / invalid format).
@@ -236,13 +237,16 @@ adds the component, so the inventory never drifts from the tree.
 
 ### `features/invoices/components/`
 
-| Component             | Path                                                     | Purpose                                                             |
-| --------------------- | -------------------------------------------------------- | ------------------------------------------------------------------- |
-| `CreateInvoiceWizard` | `features/invoices/components/create-invoice-wizard.tsx` | Five-step invoice flow: customer, terms, products, pledges, review. |
-| `CustomerPicker`      | `features/invoices/components/customer-picker.tsx`       | Debounced customer lookup by name, national ID or phone.            |
-| `InvoiceDetail`       | `features/invoices/components/invoice-detail.tsx`        | Invoice summary, products, pledges and its installments.            |
-| `InvoiceFilters`      | `features/invoices/components/invoice-filters.tsx`       | Search, Jalali date range and preset filters for the invoice list.  |
-| `InvoicesTable`       | `features/invoices/components/invoices-table.tsx`        | Invoice rows with customer, totals and installment status.          |
+| Component                 | Path                                                         | Purpose                                                             |
+| ------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `CreateInvoiceWizard`     | `features/invoices/components/create-invoice-wizard.tsx`     | Five-step invoice flow: customer, terms, products, pledges, review. |
+| `CustomerPicker`          | `features/invoices/components/customer-picker.tsx`           | Debounced customer lookup by name, national ID or phone.            |
+| `InvoiceDetail`           | `features/invoices/components/invoice-detail.tsx`            | Invoice summary, products, pledges and its installments.            |
+| `InvoiceFilters`          | `features/invoices/components/invoice-filters.tsx`           | Search, Jalali date range and preset filters for the invoice list.  |
+| `InvoicesTable`           | `features/invoices/components/invoices-table.tsx`            | Invoice rows with customer, totals and installment status.          |
+| `PublicInvoiceDetail`     | `features/invoices/components/public-invoice-detail.tsx`     | Read-only, censored invoice view for the public link.               |
+| `PublicInvoiceLink`       | `features/invoices/components/public-invoice-link.tsx`       | Copyable public invoice URL shown on the admin detail page.         |
+| `PublicInstallmentsTable` | `features/invoices/components/public-installments-table.tsx` | Read-only installment list; no pay or receipt actions.              |
 
 ### `features/installments/components/`
 

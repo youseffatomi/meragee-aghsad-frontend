@@ -30,6 +30,7 @@ export const apiEndpoints = {
     create: "/invoice",
     one: (invoiceId: string) => `/invoice/find/one/${encodeURIComponent(invoiceId)}`,
     search: "/invoice/search",
+    public: (token: string) => `/public/invoice/${encodeURIComponent(token)}`,
   },
 
   installments: {

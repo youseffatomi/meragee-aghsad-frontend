@@ -1,6 +1,6 @@
 import { apiEndpoints } from "@/config/api-endpoints";
 import { landingPathFor } from "@/config/navigation";
-import { isRole, permissionsFor } from "@/config/permissions";
+import { isStaffRole, permissionsFor } from "@/config/permissions";
 import { verifyOtpSchema } from "@/features/auth/schemas";
 import { apiClient } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
@@ -21,13 +21,19 @@ export const POST = routeHandler(async (request) => {
   const body = await readJson(request, verifyOtpSchema);
 
   const tokens = await apiClient.post<AuthTokens>(apiEndpoints.auth.verifyOtp, body);
-  await setSessionCookies(tokens);
-
   const me = await apiClient.get<User>(apiEndpoints.users.me, { token: tokens.access });
 
-  if (!isRole(me.role)) {
-    throw new ApiError({ message: "نقش کاربر نامعتبر است.", statusCode: 500 });
+  // Customers (`USER`) have no panel. Reject before the session cookies are
+  // written, so a rejected login leaves no usable session behind.
+  if (!isStaffRole(me.role)) {
+    throw new ApiError({
+      message:
+        "ورود کاربران عادی به پنل مجاز نیست. برای مشاهدهٔ فاکتور از لینک اختصاصی همان فاکتور استفاده کنید.",
+      statusCode: 403,
+    });
   }
+
+  await setSessionCookies(tokens);
 
   return { redirectTo: landingPathFor(permissionsFor(me.role)) };
 });

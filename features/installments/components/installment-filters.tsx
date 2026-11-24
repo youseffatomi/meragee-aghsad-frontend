@@ -349,8 +349,6 @@ export function InstallmentFilters({
       >
         <div className="overflow-hidden">
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
-            <span className="shrink-0 text-[11px] text-ink-muted">بازه:</span>
-
             {visiblePresets.map((preset) => (
               <button
                 key={preset.key}

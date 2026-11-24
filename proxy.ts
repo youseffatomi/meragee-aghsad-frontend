@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { isPublicRoute, routes } from "@/config/routes";
+import { isGuestOnlyRoute, isPublicRoute, routes } from "@/config/routes";
 import { refreshTokens } from "@/lib/auth/refresh";
 import {
   SESSION_COOKIE_BASE,
@@ -60,8 +60,14 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     return publicRoute ? NextResponse.next() : redirectToLogin(request);
   }
 
-  if (publicRoute) {
+  // A signed-in user has no reason to see the login form again. Other public
+  // routes (the invoice link) stay reachable so staff can preview them.
+  if (isGuestOnlyRoute(pathname)) {
     return NextResponse.redirect(new URL(routes.dashboard, request.url));
+  }
+
+  if (publicRoute) {
+    return NextResponse.next();
   }
 
   if (!isTokenExpired(access, REFRESH_LEEWAY_SECONDS)) {

@@ -141,8 +141,6 @@ export function InvoiceFilters({ search, fromDate, toDate }: InvoiceFiltersProps
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[11px] text-ink-muted">بازه‌های آماده:</span>
-
         {invoiceDatePresets.map((preset) => (
           <button
             key={preset.key}

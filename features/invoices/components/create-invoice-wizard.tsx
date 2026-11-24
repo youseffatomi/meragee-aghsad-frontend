@@ -33,16 +33,16 @@ import { CustomerPicker } from "./customer-picker";
 
 const STEPS = [
   { title: "انتخاب مشتری" },
-  { title: "مشخصات فاکتور" },
   { title: "محصولات" },
+  { title: "مشخصات فاکتور" },
   { title: "ضمانت‌ها" },
   { title: "جمع‌بندی و ثبت" },
 ] as const;
 
 const STEP_FIELDS: Path<CreateInvoiceInput>[][] = [
   ["user"],
-  ["start_date", "downPayment", "installmentCount"],
   ["products"],
+  ["start_date", "downPayment", "installmentCount"],
   ["pledge"],
   [],
 ];
@@ -60,9 +60,9 @@ function defaultValues(): CreateInvoiceInput {
 
 function stepForField(field: string): number {
   if (field === "user") return 0;
-  if (field.startsWith("products")) return 2;
+  if (field.startsWith("products")) return 1;
   if (field.startsWith("pledge")) return 3;
-  return 1;
+  return 2;
 }
 
 function numericValue(value: string): number {
@@ -171,7 +171,7 @@ export function CreateInvoiceWizard() {
           </div>
         ) : null}
 
-        {step === 1 ? (
+        {step === 2 ? (
           <div className="flex flex-col gap-5">
             <header>
               <h2 className="text-sm font-bold text-ink">مشخصات فاکتور</h2>
@@ -179,6 +179,14 @@ export function CreateInvoiceWizard() {
                 تاریخ شروع، پیش‌پرداخت و تعداد اقساط را مشخص کنید.
               </p>
             </header>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-field border border-brand-200 bg-brand-50 px-4 py-3">
+              <span className="text-xs font-medium text-ink-muted">مبلغ کل محصولات</span>
+              <strong className="text-base font-bold text-ink tabular-nums">
+                {formatNumber(total)}{" "}
+                <span className="text-xs font-medium text-ink-muted">تومان</span>
+              </strong>
+            </div>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <Field
@@ -245,17 +253,35 @@ export function CreateInvoiceWizard() {
               </Field>
             </div>
 
-            <div className="rounded-field bg-surface-sunken px-4 py-3 text-xs text-ink-muted">
-              مبلغ کل محصولات فعلی:{" "}
-              <strong className="font-bold text-ink tabular-nums">
-                {formatNumber(total)}
-              </strong>{" "}
-              تومان
-            </div>
+            {total > 0 && installmentCount > 0 ? (
+              <section className="flex flex-col gap-3 rounded-field border border-line bg-surface-sunken p-4">
+                <h3 className="text-xs font-bold text-ink">پیش‌نمایش اقساط</h3>
+
+                <dl className="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+                  <InstallmentPreviewItem
+                    label="مبلغ باقی‌مانده"
+                    value={formatNumber(summary.remaining)}
+                  />
+                  <InstallmentPreviewItem
+                    label="سود کل (۵٪)"
+                    value={formatNumber(Math.round(summary.interest))}
+                  />
+                  <InstallmentPreviewItem
+                    label="مبلغ هر قسط بدون سود"
+                    value={formatNumber(summary.base)}
+                  />
+                  <InstallmentPreviewItem
+                    label="مبلغ هر قسط با سود"
+                    value={formatNumber(summary.final)}
+                    highlight
+                  />
+                </dl>
+              </section>
+            ) : null}
           </div>
         ) : null}
 
-        {step === 2 ? (
+        {step === 1 ? (
           <div className="flex flex-col gap-6">
             <header>
               <h2 className="text-sm font-bold text-ink">محصولات</h2>
@@ -557,6 +583,10 @@ export function CreateInvoiceWizard() {
                 value={formatNumber(Math.round(summary.interest))}
               />
               <ReviewItem
+                label="مبلغ هر قسط (بدون سود)"
+                value={formatNumber(summary.base)}
+              />
+              <ReviewItem
                 label="مبلغ هر قسط (با سود)"
                 value={formatNumber(summary.final)}
               />
@@ -640,11 +670,13 @@ export function CreateInvoiceWizard() {
               </Button>
             ) : null}
 
-            {step < STEPS.length - 1 ? (
+            {step < STEPS.length - 1 && (
               <Button type="button" onClick={next}>
                 مرحله بعد
               </Button>
-            ) : (
+            )}
+
+            {step == STEPS.length - 1 && (
               <Button type="submit" isLoading={isSubmitting}>
                 ثبت فاکتور
               </Button>
@@ -673,6 +705,31 @@ function ReviewItem({
         dir={ltr ? "ltr" : undefined}
       >
         {value}
+      </dd>
+    </div>
+  );
+}
+
+function InstallmentPreviewItem({
+  label,
+  value,
+  highlight = false,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 border-b border-line/70 pb-2">
+      <dt className="text-[11px] text-ink-muted">{label}</dt>
+      <dd
+        className={
+          highlight
+            ? "text-sm font-bold text-brand-text tabular-nums"
+            : "text-sm font-medium text-ink tabular-nums"
+        }
+      >
+        {value} <span className="text-[10px] font-normal text-ink-muted">تومان</span>
       </dd>
     </div>
   );

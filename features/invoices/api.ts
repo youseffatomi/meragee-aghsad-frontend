@@ -4,7 +4,7 @@ import { apiEndpoints } from "@/config/api-endpoints";
 import { apiClient } from "@/lib/api/client";
 import { readSessionCookies } from "@/lib/auth/cookies";
 import type { Paginated } from "@/types/api";
-import type { Invoice } from "@/types/domain";
+import type { Invoice, PublicInvoice } from "@/types/domain";
 
 /** Server-side reads for the invoices pages. */
 
@@ -45,4 +45,14 @@ export async function getInvoice(id: string): Promise<Invoice> {
   return apiClient.get<Invoice>(apiEndpoints.invoices.one(id), {
     token: access,
   });
+}
+
+/**
+ * Reads the public, read-only invoice view.
+ *
+ * The token in the URL is the whole credential: this call deliberately sends no
+ * session token, and the backend returns a censored projection.
+ */
+export async function getPublicInvoice(token: string): Promise<PublicInvoice> {
+  return apiClient.get<PublicInvoice>(apiEndpoints.invoices.public(token));
 }

@@ -21,6 +21,11 @@ export const routes = {
     list: "/invoices",
     create: "/invoices/create",
     one: (id: string) => `/invoices/${encodeURIComponent(id)}`,
+    /**
+     * The public, read-only invoice view. The path is deliberately short and
+     * carries no invoice id: the token itself is the unguessable secret.
+     */
+    public: (token: string) => `/p/${encodeURIComponent(token)}`,
   },
 
   installments: {
@@ -36,14 +41,27 @@ export const routes = {
 export const homeRoute = routes.dashboard;
 
 /**
- * Routes reachable without a session. The guard treats everything not listed
- * here as protected, so a new page is protected by default rather than by
- * remembering to add it.
+ * Routes only a signed-out visitor may open. A signed-in user is sent back to
+ * the panel instead of seeing the login form again.
  */
-const PUBLIC_ROUTES: readonly string[] = [routes.login];
+const GUEST_ONLY_ROUTES: readonly string[] = [routes.login];
+
+/**
+ * Routes reachable without a session but also useful to a signed-in user.
+ * The public invoice link is one: an admin may open a customer's link to check
+ * what they see, and must not be bounced to the dashboard.
+ */
+const PUBLIC_ROUTE_PATTERNS: readonly RegExp[] = [/^\/p\/[A-Za-z0-9_-]{20,100}\/?$/];
+
+export function isGuestOnlyRoute(pathname: string): boolean {
+  return GUEST_ONLY_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+}
 
 export function isPublicRoute(pathname: string): boolean {
-  return PUBLIC_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  return (
+    isGuestOnlyRoute(pathname) ||
+    PUBLIC_ROUTE_PATTERNS.some((pattern) => pattern.test(pathname))
   );
 }

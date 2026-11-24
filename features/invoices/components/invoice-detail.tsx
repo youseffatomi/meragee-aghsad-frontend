@@ -1,11 +1,13 @@
 import { ImageOff, Package, ShieldCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { routes } from "@/config/routes";
 import { InstallmentsTable } from "@/features/installments/components/installments-table";
 import { fileSrc } from "@/lib/files/url";
 import { formatJalaliDate } from "@/lib/format/date";
 import { formatNumber, toPersianDigits } from "@/lib/format/number";
 import type { Installment, Invoice } from "@/types/domain";
+import { PublicInvoiceLink } from "./public-invoice-link";
 
 function totalOf(invoice: Invoice): number {
   if (typeof invoice.totalAmount === "number") return invoice.totalAmount;
@@ -73,6 +75,10 @@ export function InvoiceDetail({
 
   return (
     <div className="flex flex-col gap-6">
+      {invoice.publicToken ? (
+        <PublicInvoiceLink path={routes.invoices.public(invoice.publicToken)} />
+      ) : null}
+
       <section className="rounded-card border border-line bg-surface p-5 shadow-card sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex flex-col gap-1">

@@ -6,7 +6,8 @@
  * change here and never a hunt through components.
  *
  * The grants mirror the `x-allowed-roles` values in the backend OpenAPI spec.
- * `ACCOUNTANT` can only read products; `USER` is granted no route today.
+ * `ACCOUNTANT` can only read products; `USER` is a customer account and never
+ * signs in to the panel — customers only open their public invoice link.
  */
 
 export const ROLES = ["SUPER_ADMIN", "SELLER", "ACCOUNTANT", "USER"] as const;
@@ -35,8 +36,17 @@ const GRANTS: Record<Role, readonly Permission[]> = {
   USER: [],
 };
 
+/** The roles allowed to sign in to the panel. `USER` is deliberately excluded. */
+export const STAFF_ROLES = ["SUPER_ADMIN", "SELLER", "ACCOUNTANT"] as const;
+
+export type StaffRole = (typeof STAFF_ROLES)[number];
+
 export function isRole(value: unknown): value is Role {
   return typeof value === "string" && (ROLES as readonly string[]).includes(value);
+}
+
+export function isStaffRole(value: unknown): value is StaffRole {
+  return typeof value === "string" && (STAFF_ROLES as readonly string[]).includes(value);
 }
 
 export function permissionsFor(role: Role): ReadonlySet<Permission> {

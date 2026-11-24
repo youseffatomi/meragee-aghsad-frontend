@@ -72,6 +72,73 @@ export type UserInvoice = {
   updatedAt?: string;
 };
 
+/** One installment as exposed by `GET /public/invoice/{token}`. */
+export type PublicInvoiceInstallment = {
+  no: number;
+  /** The installment principal, without interest. */
+  amount: number;
+  /** The installment with its 5% interest. */
+  amountWithInterest: number;
+  /** The final payable: `amountWithInterest` plus any late penalty. */
+  payableAmount: number;
+  /** The overdue penalty, already reduced by any waived days. */
+  latePenalty: number;
+  /** How many days past the due date this installment is. */
+  daysOverdue: number;
+  /** Days of lateness that were forgiven, reducing the penalty. */
+  waivedLateDays: number;
+  dueDate: string;
+  /** Note the single "l": the public endpoint uses `dueDateJalali`. */
+  dueDateJalali: string;
+  status: InstallmentStatus;
+  paidAt: string | null;
+};
+
+/**
+ * The `data` of `GET /public/invoice/{token}`.
+ *
+ * The backend censors this projection: there is no national id, and the phone
+ * number and IMEI arrive partially masked. It is deliberately a separate shape
+ * from `Invoice` so the public page cannot accidentally render a field the
+ * endpoint never sends.
+ */
+export type PublicInvoice = {
+  invoice: {
+    name: string;
+    startDateJalali: string;
+    installmentCount: number;
+    downPayment: number;
+    totalAmount: number;
+    createdAt: string;
+  };
+  customer: {
+    name: string | null;
+    lastName: string | null;
+    phone: string | null;
+  };
+  products: {
+    name: string;
+    details?: string | null;
+    price: number;
+    pictures?: string[] | null;
+    imei?: string | null;
+  }[];
+  installments: PublicInvoiceInstallment[];
+  installmentsStatus: {
+    paid: number;
+    pending: number;
+    overdue: number;
+  };
+  /** Aggregate of the overdue installments, computed by the backend. */
+  overdueSummary: {
+    count: number;
+    totalPayable: number;
+    totalPenalty: number;
+    totalWaivedDays: number;
+    maxDaysOverdue: number;
+  };
+};
+
 /** The `data` of `GET /users/find/one/{id}` — the user plus a page of invoices. */
 export type UserWithInvoices = User & {
   invoices: Paginated<UserInvoice>;
@@ -253,6 +320,8 @@ export type Invoice = {
     paid: number;
     overdue: number;
   };
+  /** The unguessable token behind the public, read-only invoice link. */
+  publicToken?: string;
   createdAt?: string;
   updatedAt?: string;
 };
