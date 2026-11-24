@@ -1,5 +1,6 @@
 import {
   CalendarDays,
+  ChartColumn,
   FilePlus2,
   Home,
   Package,
@@ -26,6 +27,7 @@ const ICONS: Record<NavIconName, LucideIcon> = {
   "file-plus": FilePlus2,
   calendar: CalendarDays,
   package: Package,
+  chart: ChartColumn,
 };
 
 export function NavIcon({ name, className }: { name: NavIconName; className?: string }) {

@@ -35,6 +35,10 @@ export const routes = {
   products: {
     list: "/products",
   },
+
+  reports: {
+    financial: "/reports",
+  },
 } as const;
 
 /** The landing page after a successful login, and the fallback for unknown paths. */

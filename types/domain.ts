@@ -358,3 +358,198 @@ export type Product = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+/* -------------------------------------------------------------------------- */
+/* Financial reports (`/reports/financial/*`)                                  */
+/* -------------------------------------------------------------------------- */
+
+/** The resolved Gregorian range a report was computed for. */
+export type ReportRange = {
+  fromDate: string;
+  toDate: string;
+};
+
+/** Sales figures, filtered by `invoice.start_date`. */
+export type ReportSales = {
+  invoiceCount: number;
+  customerCount: number;
+  /** Line items sold, not distinct product names. */
+  productCount: number;
+  grossSales: number;
+  downPayments: number;
+  financedPrincipal: number;
+  interest: number;
+  contractValue: number;
+  averageInvoice: number;
+};
+
+/** Cash collected in the period, filtered by `installment.paidAt`. */
+export type ReportCollections = {
+  paidCount: number;
+  principalCollected: number;
+  interestCollected: number;
+  penaltyCollected: number;
+  totalCollected: number;
+  waivedDays: number;
+  /** Paid share of the installments of the invoices in the range, 0–100. */
+  collectionRate: number;
+};
+
+/**
+ * Outstanding money as of now — deliberately independent of the date range.
+ * `upcoming30/60/90` are the amounts due within the next 30/60/90 days.
+ */
+export type ReportReceivables = {
+  pendingCount: number;
+  pendingOutstanding: number;
+  overdueCount: number;
+  overdueOutstanding: number;
+  totalOutstanding: number;
+  upcoming30: number;
+  upcoming60: number;
+  upcoming90: number;
+};
+
+export type ReportAgingBucketName = "0-30" | "31-60" | "61-90" | "90+";
+
+export type ReportAgingBucket = {
+  bucket: ReportAgingBucketName;
+  count: number;
+  amount: number;
+};
+
+export type ReportStatusSlice = {
+  count: number;
+  amount: number;
+};
+
+/** Every installment's current state, independent of the date range. */
+export type ReportStatusBreakdown = {
+  paid: ReportStatusSlice;
+  pending: ReportStatusSlice;
+  overdue: ReportStatusSlice;
+};
+
+export type ReportPenalties = {
+  /** Accrued on installments that are overdue right now. */
+  accrued: number;
+  /** Charged on every paid installment, all time. */
+  collected: number;
+  waivedDays: number;
+  overdueWithPenaltyCount: number;
+};
+
+/**
+ * The same flow metrics for the equal-length range immediately before the
+ * selected one. Snapshot metrics are `null` because a period-over-period delta
+ * would be meaningless; the UI hides their delta badge.
+ */
+export type ReportPrevious = {
+  fromDate: string;
+  toDate: string;
+  grossSales: number;
+  totalCollected: number;
+  interest: number;
+  totalOutstanding: number | null;
+  overdueOutstanding: number | null;
+  collectionRate: number | null;
+};
+
+/** The `data` of `GET /reports/financial/summary`. */
+export type FinancialSummary = {
+  range: ReportRange;
+  sales: ReportSales;
+  collections: ReportCollections;
+  receivables: ReportReceivables;
+  aging: ReportAgingBucket[];
+  statusBreakdown: ReportStatusBreakdown;
+  penalties: ReportPenalties;
+  previous: ReportPrevious;
+};
+
+export type TrendGranularity = "day" | "week" | "month";
+
+export type FinancialTrendPoint = {
+  key: string;
+  label: string;
+  fromDate: string;
+  toDate: string;
+  invoicedAmount: number;
+  invoiceCount: number;
+  /** Due in this period, without penalty. */
+  dueAmount: number;
+  dueCount: number;
+  collectedAmount: number;
+  collectedCount: number;
+  /** Still unpaid and past due, including the penalty accrued so far. */
+  overdueAmount: number;
+  overdueCount: number;
+};
+
+/** The `data` of `GET /reports/financial/trend`. */
+export type FinancialTrend = {
+  granularity: TrendGranularity;
+  points: FinancialTrendPoint[];
+};
+
+export type ReportInvoiceStatus = "paid" | "pending" | "overdue";
+export type ReportInvoiceFilterStatus = ReportInvoiceStatus | "all";
+export type ReportInvoiceSort = "startDate" | "total" | "remaining" | "overdue";
+export type ReportCustomerSort = "outstanding" | "paid" | "purchases";
+export type ReportProductSort = "revenue" | "units";
+export type ReportExportType = "invoices" | "customers" | "products" | "installments";
+
+export type ReportInvoiceRow = {
+  invoiceId: string;
+  invoiceName: string;
+  customer: {
+    id: string | null;
+    fullName: string;
+    phone: string;
+    nationalId: string;
+  };
+  startDate: string;
+  startDateJalali: string;
+  productCount: number;
+  grossSales: number;
+  downPayment: number;
+  financedPrincipal: number;
+  interest: number;
+  paidAmount: number;
+  remainingAmount: number;
+  overdueAmount: number;
+  penaltyAmount: number;
+  installmentCount: number;
+  paidCount: number;
+  pendingCount: number;
+  overdueCount: number;
+  collectionRate: number;
+  status: ReportInvoiceStatus;
+};
+
+export type ReportCustomerRow = {
+  userId: string;
+  fullName: string;
+  phone: string;
+  nationalId: string;
+  invoiceCount: number;
+  purchasesAmount: number;
+  downPayments: number;
+  paidAmount: number;
+  outstandingAmount: number;
+  overdueAmount: number;
+  penaltyAmount: number;
+  collectionRate: number;
+  lastPaymentAt: string | null;
+};
+
+export type ReportProductRow = {
+  name: string;
+  unitsSold: number;
+  invoiceCount: number;
+  totalRevenue: number;
+  /** Share of the period revenue, 0–100. */
+  share: number;
+  totalPaid: number;
+  totalOutstanding: number;
+};

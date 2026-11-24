@@ -223,3 +223,44 @@ export const installmentDatePresets: readonly DatePreset[] = [
     range: (today) => range(startOfNextJalaliMonth(today), endOfNextJalaliMonth(today)),
   },
 ];
+
+/**
+ * The ranges a financial report is usually read in. The report defaults to the
+ * current Jalali year, so "امسال" is the same range the page opens with.
+ */
+export const reportDatePresets: readonly DatePreset[] = [
+  {
+    key: "thisMonth",
+    label: "ماه جاری",
+    range: (today) => range(startOfJalaliMonth(today), endOfJalaliMonth(today)),
+  },
+  {
+    key: "lastMonth",
+    label: "ماه گذشته",
+    range: (today) =>
+      range(startOfPreviousJalaliMonth(today), endOfPreviousJalaliMonth(today)),
+  },
+  {
+    key: "last3Months",
+    label: "سه ماه اخیر",
+    range: (today) => range(addDays(today, -90), today),
+  },
+  {
+    key: "last6Months",
+    label: "شش ماه اخیر",
+    range: (today) => range(addDays(today, -180), today),
+  },
+  {
+    key: "thisYear",
+    label: "امسال",
+    range: (today) => range(startOfJalaliYear(today), endOfJalaliYear(today)),
+  },
+  {
+    key: "lastYear",
+    label: "سال گذشته",
+    range: (today) => {
+      const lastYear = addDays(startOfJalaliYear(today), -1);
+      return range(startOfJalaliYear(lastYear), endOfJalaliYear(lastYear));
+    },
+  },
+];

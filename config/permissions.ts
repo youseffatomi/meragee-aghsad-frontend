@@ -25,6 +25,7 @@ export const PERMISSIONS = [
   "installment:read",
   "installment:pay",
   "product:read",
+  "report:read",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -32,7 +33,7 @@ export type Permission = (typeof PERMISSIONS)[number];
 const GRANTS: Record<Role, readonly Permission[]> = {
   SUPER_ADMIN: PERMISSIONS,
   SELLER: ["users:read", "product:read"],
-  ACCOUNTANT: ["product:read"],
+  ACCOUNTANT: ["product:read", "report:read"],
   USER: [],
 };
 

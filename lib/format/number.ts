@@ -7,6 +7,11 @@ const ARABIC_ZERO = 0x0660;
 
 const numberFormatter = new Intl.NumberFormat("fa-IR");
 
+const compactFormatter = new Intl.NumberFormat("fa-IR", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+
 /**
  * Rewrites Persian and Arabic-Indic digits as Latin ones.
  *
@@ -48,4 +53,14 @@ export function formatToman(value: number): string {
 /** Formats a 0–100 ratio as a percentage: 64 -> "۶۴٪" */
 export function formatPercent(value: number): string {
   return `${numberFormatter.format(Math.round(value))}٪`;
+}
+
+/**
+ * A short amount for chart axes: 4_569_999_998 -> "۴٫۶ میلیارد".
+ *
+ * Full grouped numbers would overlap on an axis, and the chart's tooltip still
+ * carries the exact figure.
+ */
+export function formatCompactNumber(value: number): string {
+  return compactFormatter.format(value);
 }

@@ -46,6 +46,15 @@ export const apiEndpoints = {
 
   dashboard: "/dashboard",
 
+  reports: {
+    summary: "/reports/financial/summary",
+    trend: "/reports/financial/trend",
+    invoices: "/reports/financial/invoices",
+    customers: "/reports/financial/customers",
+    products: "/reports/financial/products",
+    export: "/reports/financial/export",
+  },
+
   files: {
     send: "/file/send",
     remove: "/file/delete",
@@ -83,5 +92,9 @@ export const bffEndpoints = {
   files: {
     upload: "/api/files/upload",
     remove: "/api/files/delete",
+  },
+
+  reports: {
+    export: "/api/reports/export",
   },
 } as const;

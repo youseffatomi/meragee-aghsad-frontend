@@ -12,7 +12,14 @@ import { routes } from "./routes";
  */
 
 export type NavIconName =
-  "home" | "users" | "user-plus" | "receipt" | "file-plus" | "calendar" | "package";
+  | "home"
+  | "users"
+  | "user-plus"
+  | "receipt"
+  | "file-plus"
+  | "calendar"
+  | "package"
+  | "chart";
 
 export type NavigationItem = {
   label: string;
@@ -68,6 +75,12 @@ export const navigation: readonly NavigationItem[] = [
     href: routes.products.list,
     icon: "package",
     permission: "product:read",
+  },
+  {
+    label: "گزارش مالی",
+    href: routes.reports.financial,
+    icon: "chart",
+    permission: "report:read",
   },
 ];
 

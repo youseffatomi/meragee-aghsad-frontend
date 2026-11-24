@@ -266,6 +266,21 @@ adds the component, so the inventory never drifts from the tree.
 | `ProductsGrid`       | `features/products/components/products-grid.tsx`        | Responsive product card grid with an empty state.                 |
 | `ProductsSearchForm` | `features/products/components/products-search-form.tsx` | URL-driven search bar for the product list.                       |
 
+### `features/reports/components/`
+
+| Component                 | Path                                                          | Purpose                                                                 |
+| ------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `AgingTable`              | `features/reports/components/aging-table.tsx`                 | Overdue buckets with count, amount, share and a scaled bar.             |
+| `ExportButton`            | `features/reports/components/export-button.tsx`               | Dataset picker that downloads the full CSV through the BFF.             |
+| `ForecastCard`            | `features/reports/components/forecast-card.tsx`               | Pending/overdue counts and the 30/60/90-day due windows.                |
+| `InvoiceFinancialTable`   | `features/reports/components/invoice-financial-table.tsx`     | Per-invoice ledger with URL-driven search, status, sort and pagination. |
+| `KpiCard`                 | `features/reports/components/kpi-card.tsx`                    | One headline figure with an optional period-over-period delta.          |
+| `ProductRevenueTable`     | `features/reports/components/product-revenue-table.tsx`       | Products ranked by revenue, with paid/outstanding allocation.           |
+| `ReportFilters`           | `features/reports/components/report-filters.tsx`              | Jalali date range, presets and trend granularity, stored in the URL.    |
+| `StatusBreakdown`         | `features/reports/components/status-breakdown.tsx`            | Donut of the current paid/pending/overdue installment split.            |
+| `TopCustomersTable`       | `features/reports/components/top-customers-table.tsx`         | Customers with the largest outstanding balance in the period.           |
+| `TrendChart`              | `features/reports/components/trend-chart.tsx`                 | Animated SVG line/area chart of invoiced, collected and overdue money.  |
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
